@@ -5,11 +5,11 @@
 Zamiast
 
 ```bash
-ssh user@diablo.kcir.pwr.edu.pl
+ssh user@host
 ```
 
 ```bash
-ssh diablo
+ssh host-alias
 ```
 
 ## INSTRUKCJA
@@ -23,7 +23,7 @@ vi config  # jesli nie ma tego pliku to touch config i potem ten step
 
 ```bash
 Host diablo
-    HostName diablo.kcir.pwr.edu.pl
+    HostName <targetowy host>
     User <twoj uzytkownik>
 ```
 
