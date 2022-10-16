@@ -13,9 +13,8 @@ int main() {
   printf("Podaj wartosc c:");
   scanf("%f", &c);
 
-  TrinomialSolution solution;
-  trinomial_results(&solution, a,b,c);
-  print_solution(&solution);
+  TrinomialSolution *solution = trinomial_results(a, b, c);
+  print_solution(solution);
 
   return 0;
 }
