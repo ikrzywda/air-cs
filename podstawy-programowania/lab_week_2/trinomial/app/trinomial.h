@@ -3,10 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef enum { LINEAR, QUADRATIC } FunctionType;
+
 typedef struct {
+  FunctionType function_type;
   int solution_count;
   char message[50];
-  float results[4];  // [result, result, result, delta]
+  float results[3];  // [result, result, delta]
 } TrinomialSolution;
 
 TrinomialSolution *trinomial_results(float a, float b, float c) {
@@ -27,6 +30,7 @@ TrinomialSolution *trinomial_results(float a, float b, float c) {
       strcpy(solution_ptr->message, "Brak rozwiazan");
       solution_ptr->solution_count = 0;
     }
+    solution_ptr->function_type = LINEAR;
     return solution_ptr;
   }
 
@@ -34,25 +38,35 @@ TrinomialSolution *trinomial_results(float a, float b, float c) {
   if (delta < 0) {
     strcpy(solution_ptr->message, "Brak rozwiazan");
     solution_ptr->solution_count = 0;
-    solution_ptr->results[3] = delta;
+    solution_ptr->results[2] = delta;
   } else if (delta > 0) {
     solution_ptr->solution_count = 2;
     solution_ptr->results[0] = (-b - sqrt(delta)) / (2 * a);
     solution_ptr->results[1] = (-b + sqrt(delta)) / (2 * a);
-    solution_ptr->results[3] = delta;
+    solution_ptr->results[2] = delta;
   } else {
     solution_ptr->results[0] = solution_ptr->results[1] = (-b) / (2 * a);
-    solution_ptr->results[3] = delta;
+    solution_ptr->results[2] = delta;
     solution_ptr->solution_count = 2;
   }
+  solution_ptr->function_type = QUADRATIC;
   return solution_ptr;
 }
 
 void print_solution(TrinomialSolution *solution) {
-  printf("RESULTS:\n%s\n", solution->message);
-  for (int i = 0; i < solution->solution_count; ++i) {
-    printf("%f ", solution->results[i]);
+  printf("\nSOLUTIONS: ");
+  if (solution->solution_count) {
+    for (int i = 0; i < solution->solution_count; ++i) {
+      printf("%f ", solution->results[i]);
+    }
+  } else {
+    printf("RESULTS:\n%s", solution->message);
   }
-  printf("DELTA = %f", solution->results[3]);
-  printf("\n");
+
+  if (solution->function_type == QUADRATIC) {
+    printf("\nFUNCTION_TYPE: quadratic");
+    printf("\nDELTA = %f", solution->results[2]);
+  } else {
+    printf("\nFUNCTION_TYPE: linear\n");
+  }
 }

@@ -1,9 +1,19 @@
-># Trójmian
+# Trójmian
+
 >## Autor: Igor Krzywda
 >### Data Wykonania: 16.10.22
 
 ## Kod źródłowy
-Kod został zmodyfikowany na rzecz możliwości napisana zautomatyzowanych testów. 
+
+Kod został zmodyfikowany na rzecz możliwości napisana zautomatyzowanych testów:
+
+* zwracanie wyników w postaci wskaźnika do obiektu opisującego rozwiązanie
+  * typ równania (liniowe, kwadratowe)
+  * opis w przypadku braku rozwiązań
+  * liczba rozwiązań
+  * rozwiązania równania i opcjonalnie delta
+* rozdzielenie funkcjonalności liczenia i drukowania do oddzielnego modułu
+
 
 * `trinomial.h`
 
@@ -13,10 +23,13 @@ Kod został zmodyfikowany na rzecz możliwości napisana zautomatyzowanych test�
 #include <stdlib.h>
 #include <string.h>
 
+typedef enum { LINEAR, QUADRATIC } FunctionType;
+
 typedef struct {
+  FunctionType function_type;
   int solution_count;
   char message[50];
-  float results[4];  // [result, result, result, delta]
+  float results[3];  // [result, result, delta]
 } TrinomialSolution;
 
 TrinomialSolution *trinomial_results(float a, float b, float c) {
@@ -37,6 +50,7 @@ TrinomialSolution *trinomial_results(float a, float b, float c) {
       strcpy(solution_ptr->message, "Brak rozwiazan");
       solution_ptr->solution_count = 0;
     }
+    solution_ptr->function_type = LINEAR;
     return solution_ptr;
   }
 
@@ -44,27 +58,37 @@ TrinomialSolution *trinomial_results(float a, float b, float c) {
   if (delta < 0) {
     strcpy(solution_ptr->message, "Brak rozwiazan");
     solution_ptr->solution_count = 0;
-    solution_ptr->results[3] = delta;
+    solution_ptr->results[2] = delta;
   } else if (delta > 0) {
     solution_ptr->solution_count = 2;
     solution_ptr->results[0] = (-b - sqrt(delta)) / (2 * a);
     solution_ptr->results[1] = (-b + sqrt(delta)) / (2 * a);
-    solution_ptr->results[3] = delta;
+    solution_ptr->results[2] = delta;
   } else {
     solution_ptr->results[0] = solution_ptr->results[1] = (-b) / (2 * a);
-    solution_ptr->results[3] = delta;
+    solution_ptr->results[2] = delta;
     solution_ptr->solution_count = 2;
   }
+  solution_ptr->function_type = QUADRATIC;
   return solution_ptr;
 }
 
 void print_solution(TrinomialSolution *solution) {
-  printf("RESULTS:\n%s\n", solution->message);
-  for (int i = 0; i < solution->solution_count; ++i) {
-    printf("%f ", solution->results[i]);
+  printf("\nSOLUTIONS: ");
+  if (solution->solution_count) {
+    for (int i = 0; i < solution->solution_count; ++i) {
+      printf("%f ", solution->results[i]);
+    }
+  } else {
+    printf("RESULTS:\n%s", solution->message);
   }
-  printf("DELTA = %f", solution->results[3]);
-  printf("\n");
+
+  if (solution->function_type == QUADRATIC) {
+    printf("\nFUNCTION_TYPE: quadratic");
+    printf("\nDELTA = %f", solution->results[2]);
+  } else {
+    printf("\nFUNCTION_TYPE: linear\n");
+  }
 }
 ```
 
@@ -76,28 +100,45 @@ void print_solution(TrinomialSolution *solution) {
 int main() {
   float a, b, c;
 
-  printf("Program oblicza pierwiastki rownania w postaci\n");
-  printf("     2\n");
-  printf("  a x + b x +c =0\n");
-  printf("Podaj wartosc a:");
+  printf("This program computes roots of trinomial in a form of");
+  printf("\n  a(x)+b(x)+c = 0");
+  printf("\nEnter a: ");
   scanf("%f", &a);
-  printf("Podaj wartosc b:");
+  printf("Enter b: ");
   scanf("%f", &b);
-  printf("Podaj wartosc c:");
+  printf("Enter c: ");
   scanf("%f", &c);
 
   TrinomialSolution *solution = trinomial_results(a, b, c);
   print_solution(solution);
-  free(solution);
 
   return 0;
 }
 ```
+
+
+## Testy
+
+Do testów używane są asercje - nie jest to najlepsze rozwiązanie, ponieważ
+asercje terminują program na fałszywe wyrażenie zatem wiadomo tylko o pierwszym
+failującym teście. Lepszym rozwiązaniem byłby framework pozwalający na logowanie
+wyników.
+
+## Struktura testów
+
+* *setup* : stworzenie nowej instancji obiektu `TrinomialSolution` z `trinomial_solutions`
+* *testy* : sprawdzanie wyników z wcześniej obliczonymi rezultatami
+* *teardown* : dealokowanie testowego obiektu
+
+Testy pokrywają każdy przypadek w algorytmie - jako opis służą nazwy funkcji a jako
+
+
+## Kod
+
 * `tests.c`
 
 ```c
 #include <assert.h>
-#include <stdio.h>
 
 #include "trinomial.h"
 
@@ -106,16 +147,29 @@ void test_trinomial_results_linear_function_with_solutions() {
 
   assert(solution->solution_count == 1);
   assert(solution->results[0] == -5);
+  assert(solution->function_type == LINEAR);
 
   free(solution);
 }
 
-void test_trinomial_results_linear_function_no_solutions() {
-  TrinomialSolution* solution = trinomial_results(0, 0, 15);
+void test_trinomial_results_linear_function_any_x_as_solution() {
+  TrinomialSolution* solution = trinomial_results(0, 0, 0);
   assert(!solution->solution_count);
 
   trinomial_results(0, 0, 0);
   assert(!solution->solution_count);
+  assert(solution->function_type == LINEAR);
+
+  free(solution);
+}
+
+void test_trinomial_results_linear_function_with_no_solutions() {
+  TrinomialSolution* solution = trinomial_results(0, 0, 15);
+  assert(!solution->solution_count);
+
+  trinomial_results(0, 0, 15);
+  assert(!solution->solution_count);
+  assert(solution->function_type == LINEAR);
 
   free(solution);
 }
@@ -123,40 +177,44 @@ void test_trinomial_results_linear_function_no_solutions() {
 void test_trinomial_results_quadratic_function_no_solutions() {
   TrinomialSolution* solution = trinomial_results(1, 1, 2);
   assert(!solution->solution_count);
-  assert(solution->results[3] == -7);
+  assert(solution->results[2] == -7);
+  assert(solution->function_type == QUADRATIC);
 
   free(solution);
 }
 
-void test_trinomial_results_quadratic_function_with_solutions() {
-  TrinomialSolution *solution_1, *solution_2;
-  solution_1 = trinomial_results(1, 2, 1);
-  assert(solution_1->solution_count == 2);
-  assert(solution_1->results[0] == -1);
-  assert(solution_1->results[1] == -1);
-  assert(solution_1->results[3] == 0);
+void test_trinomial_results_quadratic_function_two_solutions() {
+  TrinomialSolution* solution = trinomial_results(1, 2, 1);
 
-  solution_2 = trinomial_results(1, 8, 15);
-  assert(solution_2->solution_count == 2);
-  assert(solution_2->results[0] == -5);
-  assert(solution_2->results[1] == -3);
-  assert(solution_2->results[3] == 4);
+  assert(solution->solution_count == 2);
+  assert(solution->results[0] == -1);
+  assert(solution->results[1] == -1);
+  assert(solution->results[2] == 0);
+  assert(solution->function_type == QUADRATIC);
 
-  free(solution_1);
-  free(solution_2);
+  free(solution);
+}
+
+void test_trinomial_results_quadratic_function_double_root() {
+  TrinomialSolution* solution = trinomial_results(1, 8, 15);
+
+  assert(solution->solution_count == 2);
+  assert(solution->results[0] == -5);
+  assert(solution->results[1] == -3);
+  assert(solution->results[2] == 4);
+  assert(solution->function_type == QUADRATIC);
+
+  free(solution);
 }
 
 int main() {
   test_trinomial_results_linear_function_with_solutions();
-  test_trinomial_results_linear_function_no_solutions();
-  test_trinomial_results_quadratic_function_no_solutions();
-  test_trinomial_results_quadratic_function_with_solutions();
+  test_trinomial_results_linear_function_any_x_as_solution();
+  test_trinomial_results_linear_function_with_no_solutions();
+  test_trinomial_results_quadratic_function_two_solutions();
+  test_trinomial_results_quadratic_function_double_root();
 }
 ```
-
-## Przeprowadzenie testów
-
->`./run_tests.sh`
 
 * `./run_tests.sh`
 
@@ -174,5 +232,5 @@ rm tests
 
 ## Wyniki
  
-Na wszystkich dostępnych maszynach (diablo, penamint, prywatny laptop) 
+Na wszystkich dostępnych maszynach (diablo (gcc), penamint (gcc), prywatna maszyna (clang)) 
 testy przeszły bez wyrzucania błędów.
