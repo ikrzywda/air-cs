@@ -1,38 +1,19 @@
+#ifndef PULSE_METER_H
+#define PULSE_METER_H
+
 #include <stdio.h>
 #include <string.h>
 
 #include "constants.h"
 
-int compute_edge_values(float *data_batch, float results[2])
-{
-    float min, max;
-    min = max = data_batch[0];
-    for (int i = 1; i < BATCH_LENGTH; ++i)
-    {
-        if (data_batch[i] > max)
-        {
-            max = data_batch[i];
-        }
-        if (data_batch[i] < min)
-        {
-            min = data_batch[i];
-        }
+float compute_bpm(float data_batch[BATCH_LENGTH], float duration) {
+  int change_count = 0;
+  for (int i = 0; i < BATCH_LENGTH; ++i) {
+    if (!(data_batch[i - 1] < 0) != !(data_batch[i] < 0)) {
+      ++change_count;
     }
-
-    results[0] = min;
-    results[1] = max;
+  }
+  return (change_count / duration) * 6;
 }
 
-int normalize_input_data(float *data_batch)
-{
-    float edge_values[2], input_range; // [min, max]
-    compute_edge_values(data_batch, edge_values);
-    input_range = edge_values[1] - edge_values[0];
-    int normalized;
-
-    for (int i = 0; i < BATCH_LENGTH; ++i)
-    {
-        normalized = (int)((data_batch[i] - edge_values[0]) / input_range) * NORMALIZATION_RANGE + NORMALIZED_RANGE_MIN;
-        data_batch[i] = normalized;
-    }
-}
+#endif
