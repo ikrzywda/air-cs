@@ -58,13 +58,13 @@ void pretty_print_data_batch(float values[BATCH_LENGTH], int row_length) {
 }
 
 int scan_data_chunk(float times[BATCH_LENGTH], float pressures[BATCH_LENGTH],
-                    float (*parser_timestamp_ptr)(char *)) {
+                    float (*parse_timestamp_ptr)(char *)) {
   char time_buffer[20];
   float pressure;
   int i = 0;
   for (; i < BATCH_LENGTH && (scanf("%s %f", time_buffer, &pressure) == 2);
        ++i) {
-    times[i] = (*parser_timestamp_ptr)(time_buffer);
+    times[i] = (*parse_timestamp_ptr)(time_buffer);
     pressures[i] = pressure;
   }
   return i;
