@@ -5,7 +5,7 @@ TARGET = pulse_meter
 SOURCES = $(SRCDIR)/app.c
 
 
-all: format compile quick_run
+all: compile quick_run
 
 format:
 	clang-format --style=Google -i $(SRCDIR)/*
