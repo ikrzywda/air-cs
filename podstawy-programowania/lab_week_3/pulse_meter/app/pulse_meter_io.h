@@ -57,17 +57,41 @@ void pretty_print_data_batch(float values[BATCH_LENGTH], int row_length) {
   }
 }
 
-int scan_data_chunk(float times[BATCH_LENGTH], float pressures[BATCH_LENGTH],
+int scan_data_chunk(float *duration, float pressures[BATCH_LENGTH],
                     float (*parse_timestamp_ptr)(char *)) {
   char time_buffer[20];
-  float pressure;
+  float pressure, start_time, end_time;
   int i = 0;
+
   for (; i < BATCH_LENGTH && (scanf("%s %f", time_buffer, &pressure) == 2);
        ++i) {
-    times[i] = (*parse_timestamp_ptr)(time_buffer);
+    if (!i) {
+      start_time = (*parse_timestamp_ptr)(time_buffer);
+    }
+    pressures[i] = pressure;
+  }
+  end_time = (*parse_timestamp_ptr)(time_buffer);
+  *duration = end_time - start_time;
+  return i;
+}
+
+int scan_normalized_data_chunk(int pressures[BATCH_LENGTH]) {
+  int pressure, i = 0;
+  for (; i < BATCH_LENGTH && (scanf("%d", &pressure) == 1); ++i) {
     pressures[i] = pressure;
   }
   return i;
+}
+
+void print_frequency(float frequency) {
+    printf("frequency: %f\t", frequency);
+    if (frequency < LOWER_FREQUENCY_THRESHOLD) {
+      printf("[ERROR] frequency too low");
+    }
+    if (frequency > UPPER_FREQUENCY_THRESHOLD) {
+      printf("[ERROR] frequency too high");
+    }
+    putchar('\n');
 }
 
 #endif
