@@ -18,10 +18,10 @@ void read_raw_data(float (*timestamp_parser)(char *)) {
 }
 
 int main(int argc, char **argv) {
-  int raw_input = (argc > 1) ? !strcmp(argv[1], "--raw") : 0;
+  int raw_input = argc > 1;
   float (*timestamp_parser)(char *) = &parse_timestamp_v1;
 
-  if (argc > 2) {
+  if (argc > 1) {
     if (!strcmp(argv[1], "--timestamp-1")) {
       timestamp_parser = &parse_timestamp_v1;
     } else if (!strcmp(argv[1], "--timestamp-2")) {

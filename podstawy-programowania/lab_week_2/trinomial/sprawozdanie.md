@@ -1,6 +1,6 @@
 # Trójmian
 
->## Autor: Igor Krzywda
+>## Autor: Igor Krzywda (275480)
 >### Data Wykonania: 16.10.22
 
 ## Kod źródłowy

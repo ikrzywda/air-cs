@@ -14,4 +14,4 @@ compile: $(OBJ)
 	$(CC) $(SOURCES) $(CFLAGS) -o $(TARGET)
 
 quick_run: 
-	./pulse_meter < $(input)
+	./pulse_meter $(flags) < $(input)
