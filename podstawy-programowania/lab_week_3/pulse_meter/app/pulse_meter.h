@@ -23,7 +23,8 @@ float compute_frequency_normalized_input(int data_batch[BATCH_LENGTH]) {
       ++change_count;
     }
   }
-  return (change_count / NORMALIZED_INPUT_DURATION) * (60 / NORMALIZED_INPUT_DURATION);
+  return (change_count / NORMALIZED_INPUT_DURATION) *
+         (60 / NORMALIZED_INPUT_DURATION);
 }
 
 #endif

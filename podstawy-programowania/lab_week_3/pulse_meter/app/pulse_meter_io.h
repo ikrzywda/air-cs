@@ -84,14 +84,14 @@ int scan_normalized_data_chunk(int pressures[BATCH_LENGTH]) {
 }
 
 void print_frequency(float frequency) {
-    printf("frequency: %f\t", frequency);
-    if (frequency < LOWER_FREQUENCY_THRESHOLD) {
-      printf("[ERROR] frequency too low");
-    }
-    if (frequency > UPPER_FREQUENCY_THRESHOLD) {
-      printf("[ERROR] frequency too high");
-    }
-    putchar('\n');
+  printf("frequency: %f\t", frequency);
+  if (frequency < LOWER_FREQUENCY_THRESHOLD) {
+    printf("[ERROR] frequency too low");
+  }
+  if (frequency > UPPER_FREQUENCY_THRESHOLD) {
+    printf("[ERROR] frequency too high");
+  }
+  putchar('\n');
 }
 
 #endif

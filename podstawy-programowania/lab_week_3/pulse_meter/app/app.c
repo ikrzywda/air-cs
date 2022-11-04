@@ -18,7 +18,6 @@ void read_raw_data(float (*timestamp_parser)(char *)) {
 }
 
 int main(int argc, char **argv) {
-  int raw_input = argc > 1;
   float (*timestamp_parser)(char *) = &parse_timestamp_v1;
 
   if (argc > 1) {
@@ -27,9 +26,6 @@ int main(int argc, char **argv) {
     } else if (!strcmp(argv[1], "--timestamp-2")) {
       timestamp_parser = &parse_timestamp_v2;
     }
-  }
-
-  if (raw_input) {
     read_raw_data(timestamp_parser);
   }
 
