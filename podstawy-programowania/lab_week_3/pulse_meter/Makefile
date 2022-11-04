@@ -4,7 +4,8 @@ SRCDIR = app
 TARGET = pulse_meter
 SOURCES = $(SRCDIR)/app.c
 
-all: format compile run
+
+all: format compile quick_run
 
 format:
 	clang-format --style=Google -i $(SRCDIR)/*
@@ -12,5 +13,5 @@ format:
 compile: $(OBJ)
 	$(CC) $(SOURCES) $(CFLAGS) -o $(TARGET)
 
-run: 
-	./pulse_meter < assets/przeciecia_zera1.txt
+quick_run: 
+	./pulse_meter < $(input)

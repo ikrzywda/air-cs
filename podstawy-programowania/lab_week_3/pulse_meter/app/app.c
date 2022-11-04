@@ -4,16 +4,16 @@
 
 int main(int argc, char **argv) {
   float time[100], pressure[100];
-  float bpm;
+  float frequency;
 
-  while (scan_data_chunk(time, pressure)) {
-    bpm = compute_bpm(pressure, 10);
-    printf("BPM: %f ", bpm);
-    if (bpm < LOWER_BPM_THRESHOLD) {
-      printf("[ERROR] BPM too low");
+  while (scan_data_chunk(time, pressure, parse_timestamp_v1)) {
+    frequency = compute_frequency(pressure, 10);
+    printf("frequency: %f ", frequency);
+    if (frequency < LOWER_FREQUENCY_THRESHOLD) {
+      printf("[ERROR] frequency too low");
     }
-    if (bpm > UPPER_BPM_THRESHOLD) {
-      printf("[ERROR] BPM too high");
+    if (frequency > UPPER_FREQUENCY_THRESHOLD) {
+      printf("[ERROR] frequency too high");
     }
     putchar('\n');
   }
