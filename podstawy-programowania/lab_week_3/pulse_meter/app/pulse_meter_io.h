@@ -77,21 +77,15 @@ int scan_data_chunk(float *duration, float pressures[BATCH_LENGTH],
 
 int scan_normalized_data_chunk(int pressures[BATCH_LENGTH]) {
   int pressure, i = 0;
-  for (; i < BATCH_LENGTH && (scanf("%d", &pressure) == 1); ++i) {
-    pressures[i] = pressure;
+  while (i < BATCH_LENGTH && (scanf("%d", &pressure) == 1) &&
+         pressure != NORMALIZED_INPUT_BATCH_EXIT_CODE) {
+    if (pressure < NORMALIZED_INPUT_LOWER_BOUND ||
+        pressure > NORMALIZED_INPUT_UPPER_BOUND) {
+      continue;
+    }
+    pressures[i++] = pressure;
   }
   return i;
-}
-
-void print_intersection_count(int n) {
-  printf("intersection count: %d\t", n);
-  if (n < LOWER_THRESHOLD_INTERSECTIONS) {
-    printf("[ERROR] frequency too low");
-  }
-  if (n > UPPER_THRESHOLD_INTERSECTIONS) {
-    printf("[ERROR] frequency too high");
-  }
-  putchar('\n');
 }
 
 #endif
