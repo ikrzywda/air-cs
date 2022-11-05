@@ -3,17 +3,32 @@
 #include "pulse_meter_io.h"
 
 void read_normalized_data() {
-  int pressures[BATCH_LENGTH];
+  int pressures[BATCH_LENGTH], intersection_count;
   while (scan_normalized_data_chunk(pressures)) {
-    print_frequency(compute_frequency_normalized_input(pressures));
+    intersection_count = compute_bpm_normalized_input(pressures);
+    printf("frequency: %d\t", intersection_count);
+    if (intersection_count < LOWER_THRESHOLD_INTERSECTIONS) {
+      printf("[ERROR] frequency too low");
+    }
+    if (intersection_count > UPPER_THRESHOLD_INTERSECTIONS) {
+      printf("[ERROR] frequency too high");
+    }
+    putchar('\n');
   }
 }
 
 void read_raw_data(float (*timestamp_parser)(char *)) {
-  float frequency, duration, pressure[100];
-  while (scan_data_chunk(&duration, pressure, timestamp_parser)) {
-    frequency = compute_frequency(pressure, 10);
-    print_frequency(frequency);
+  float bpm, duration, pressures[100];
+  while (scan_data_chunk(&duration, pressures, timestamp_parser)) {
+    bpm = compute_bpm(pressures, 10);
+    printf("bpm: %f\t", bpm);
+    if (bpm < LOWER_THRESHOLD_BPM) {
+      printf("[ERROR] bpm too low");
+    }
+    if (bpm > UPPER_THRESHOLD_BPM) {
+      printf("[ERROR] bpm too high");
+    }
+    putchar('\n');
   }
 }
 

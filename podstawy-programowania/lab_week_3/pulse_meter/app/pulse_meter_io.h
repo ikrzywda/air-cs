@@ -83,12 +83,12 @@ int scan_normalized_data_chunk(int pressures[BATCH_LENGTH]) {
   return i;
 }
 
-void print_frequency(float frequency) {
-  printf("frequency: %f\t", frequency);
-  if (frequency < LOWER_FREQUENCY_THRESHOLD) {
+void print_intersection_count(int n) {
+  printf("intersection count: %d\t", n);
+  if (n < LOWER_THRESHOLD_INTERSECTIONS) {
     printf("[ERROR] frequency too low");
   }
-  if (frequency > UPPER_FREQUENCY_THRESHOLD) {
+  if (n > UPPER_THRESHOLD_INTERSECTIONS) {
     printf("[ERROR] frequency too high");
   }
   putchar('\n');
