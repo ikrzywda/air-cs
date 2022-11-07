@@ -1,6 +1,7 @@
 from PIL import Image
 import sys
 
+# https://stackoverflow.com/questions/30227466/combine-several-images-horizontally-with-python
 
 if __name__ == "__main__":
     images = [Image.open(x) for x in sys.argv[1:]]
