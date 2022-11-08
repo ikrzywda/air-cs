@@ -1,9 +1,12 @@
 from PIL import Image
 import sys
 
-# https://stackoverflow.com/questions/30227466/combine-several-images-horizontally-with-python
 
 if __name__ == "__main__":
+
+    if len(sys.argv) < 2:
+        raise Exception("must provide at least one source")
+
     images = [Image.open(x) for x in sys.argv[1:]]
     widths, heights = zip(*(i.size for i in images))
     total_width = sum(widths)
