@@ -1,7 +1,5 @@
 #include "reader.h"
 
-void dupa() { printf("dupa"); }
-
 int read_header(FILE *input_stream, PGMImage *output) {
   char buffer[LINE_WIDTH], comment_buffer;
   int width, height, bit_depth;
@@ -40,8 +38,20 @@ int *load_contents(FILE *input_stream, int length) {
     }
     contents[i] = l;
   }
-
   return contents;
+}
+
+int write_to_file(FILE *write_stream, PGMImage *source) {
+  fprintf(write_stream, "P2\n%d %d\n%d\n", source->height, source->width,
+          source->bit_depth);
+  int length = source->width * source->height;
+  for (int i = 0; i < length; ++i) {
+    if (!(i % 11)) {
+      fputc('\n', write_stream);
+    }
+    fprintf(write_stream, " %-3d ", source->contents[i]);
+  }
+  return 0;
 }
 
 PGMImage *new_pgm(const char *path) {
@@ -52,7 +62,9 @@ PGMImage *new_pgm(const char *path) {
   read_header(f, new_image);
 
   length = new_image->height * new_image->width;
+  new_image->contents_length = length;
   contents = load_contents(f, length);
+  new_image->contents = contents;
 
   fclose(f);
   return new_image;
