@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #include "constants.h"
 
 float parse_timestamp_v1(char *raw_timestamp) {
@@ -70,10 +71,6 @@ int scan_data_chunk(float *duration, float pressures[BATCH_LENGTH],
     }
 
     pressures[i] = pressure;
-    
-    if (pressure == EXIT_CODE) {
-      break;
-    }
   }
   end_time = (*parse_timestamp_ptr)(time_buffer);
   *duration = end_time - start_time;
@@ -82,13 +79,11 @@ int scan_data_chunk(float *duration, float pressures[BATCH_LENGTH],
 
 int scan_normalized_data_chunk(int pressures[BATCH_LENGTH]) {
   int pressure, i = 0;
-  while (i < BATCH_LENGTH && (scanf("%d", &pressure) == 1) &&
-         pressure != EXIT_CODE) {
-    if (pressure < INPUT_LOWER_BOUND ||
-        pressure > INPUT_UPPER_BOUND) {
+  for (; i < BATCH_LENGTH && (scanf("%d", &pressure) == 2); ++i) {
+    if (pressure < INPUT_LOWER_BOUND || pressure > INPUT_UPPER_BOUND) {
       continue;
     }
-    pressures[i++] = pressure;
+    pressures[i] = pressure;
   }
   pressures[i] = EXIT_CODE;
   return i;
