@@ -75,12 +75,21 @@ int scan_data_chunk(float *duration, float pressures[BATCH_LENGTH],
   return i;
 }
 
-int scan_normalized_data_chunk(int pressures[BATCH_LENGTH]) {
-  int pressure, i = 0;
-  for (; i < BATCH_LENGTH && (scanf("%d", &pressure) == 1); ++i) {
-    pressures[i] = pressure;
+int scan_normalized_data_chunk(float readings[BATCH_LENGTH]) { 
+  float pressure;
+  int i = 0, exit_flag = 1;
+
+  while (i < BATCH_LENGTH && (scanf("%f", &pressure) == 1)) {
+    if (pressure == EXIT_CODE) {
+      exit_flag = 0;
+      break;
+    }
+    if (pressure > UPPER_VALUE_THRESHOLD || pressure < LOWER_VALUE_THRESHOLD) continue;
+    readings[i] = pressure;
+    ++i;
   }
-  return i;
+  readings[i] = EXIT_CODE;
+  return (exit_flag || !i);
 }
 
 void print_frequency(float frequency) {

@@ -3,10 +3,13 @@
 #include "pulse_meter_io.h"
 
 void read_normalized_data() {
-  int pressures[BATCH_LENGTH];
-  while (scan_normalized_data_chunk(pressures)) {
-    print_frequency(compute_frequency_normalized_input(pressures));
-  }
+  float pressures[BATCH_LENGTH], frequency;
+  int end_of_input_flag = 1;
+  do {
+    end_of_input_flag = !scan_normalized_data_chunk(pressures);
+    frequency = compute_frequency_normalized_input(pressures);
+    print_frequency(frequency);
+  } while (!end_of_input_flag);
 }
 
 void read_raw_data(float (*timestamp_parser)(char *)) {
