@@ -18,8 +18,13 @@ float compute_frequency(float data_batch[BATCH_LENGTH], float duration) {
 
 int compute_frequency_normalized_input(float data_batch[BATCH_LENGTH]) {
   int change_count = 0;
+
+  if (data_batch[0] == EXIT_CODE) {
+    return -1;
+  }
+
   for (int i = 0; i < BATCH_LENGTH; ++i) {
-    if (data_batch[i] == EXIT_CODE || data_batch[i+1] ==  EXIT_CODE) {
+    if (data_batch[i] == EXIT_CODE || data_batch[i + 1] == EXIT_CODE) {
       break;
     }
     if (!(data_batch[i] < 0) != !(data_batch[i + 1] < 0)) {
