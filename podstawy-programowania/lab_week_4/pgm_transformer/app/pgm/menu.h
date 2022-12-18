@@ -17,7 +17,6 @@ typedef struct Session {
   int _argc;
 } Session;
 
-
 typedef enum Commands {
   LOAD_SOURCE_FILE,
   SAVE_TO_FILE,
@@ -27,11 +26,7 @@ typedef enum Commands {
 } Commands;
 
 const char *COMMANDS[COMMAND_COUNT] = {
-  "load",
-  "save",
-  "invert",
-  "exit",
-  "display",
+    "load", "save", "invert", "exit", "display",
 };
 
 #endif
