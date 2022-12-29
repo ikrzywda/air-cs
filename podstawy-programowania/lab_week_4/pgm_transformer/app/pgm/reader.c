@@ -54,18 +54,16 @@ int write_to_file(FILE *write_stream, PGMImage *source) {
   return 0;
 }
 
-PGMImage *new_pgm(const char *path) {
+PGMImage *new_pgm(FILE *input_stream) {
   int length, *contents;
   PGMImage *new_image = malloc(sizeof(PGMImage));
-  FILE *f = fopen(path, "r");
 
-  read_header(f, new_image);
+  read_header(input_stream, new_image);
 
   length = new_image->height * new_image->width;
   new_image->contents_length = length;
-  contents = load_contents(f, length);
+  contents = load_contents(input_stream, length);
   new_image->contents = contents;
 
-  fclose(f);
   return new_image;
 }

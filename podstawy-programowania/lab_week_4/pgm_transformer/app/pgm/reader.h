@@ -16,6 +16,6 @@ int read_header(FILE *input_stream, PGMImage *output);
 int *load_contents(FILE *input_stream, int length);
 int write_to_file(FILE *write_stream, PGMImage *source);
 
-PGMImage *new_pgm(const char *path);
+PGMImage *new_pgm(FILE *input_stream);
 
 #endif
