@@ -11,7 +11,7 @@
 #define LINE_BUFFER_LENGTH 100
 #define MAX_PATH_LENGTH 100
 #define MAX_ARG_COUNT 2
-#define COMMAND_COUNT 5
+#define COMMAND_COUNT 8
 #define ERROR_BUFFER_LENGTH 250
 
 typedef struct Session {
@@ -27,14 +27,17 @@ typedef struct Session {
 typedef enum Commands {
   LOAD_SOURCE_FILE,
   SAVE_TO_FILE,
-  INVERT,
   EXIT,
   DISPLAY,
+  INVERT,
+  EQUALIZE,
+  SHIFT,
+  THRESHOLD,
 } Commands;
 
 
 const char *COMMANDS[COMMAND_COUNT] = {
-    "load", "save", "invert", "exit", "display",
+    "load", "save",  "exit", "display","invert", "equalize", "shift", "threshold"
 };
 
 

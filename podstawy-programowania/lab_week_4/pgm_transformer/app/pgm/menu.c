@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "reader.h"
 #include "transformer.h"
+#include <stdlib.h>
 
 Commands parse_command(char *token) {
   for (int i = 0; i < COMMAND_COUNT; ++i) {
@@ -88,6 +89,16 @@ int display_status_line(Session *session) {
     return 0;
 }
 
+int _gray_range_shift(Session *session) {
+    char *buffer;
+
+    int black_lvl = strtol(session->args[0], (char **)NULL, 10);
+    int white_lvl = strtol(session->args[1], (char **)NULL, 10);
+
+    gray_range_shift(session->pgm_image, black_lvl, white_lvl);
+    return 0;
+}
+
 int repl_main_loop() {
   Session session;
   char buffer[LINE_BUFFER_LENGTH];
@@ -155,6 +166,28 @@ int repl_main_loop() {
             break;
         }
         invert_image(session.pgm_image);
+        break;
+      }
+      case EQUALIZE: {
+        if (!session.pgm_image) {
+            strcpy(session.error_buffer, "no source loaded");
+            session.is_error = 1;
+            break;
+        }
+        histogram_equilization(session.pgm_image);
+        break;
+      }
+      case SHIFT: {
+        if (session._argc < 2) {
+            strcpy(session.error_buffer, "load file command takes two arguments");
+            session.is_error = 1;
+            break;
+        }
+        if (_gray_range_shift(&session)) {
+            sprintf(session.error_buffer, "failed to load file: %s", session.args[0]);
+            session.is_error = 1;
+            break;
+        }
         break;
       }
       case EXIT: {
