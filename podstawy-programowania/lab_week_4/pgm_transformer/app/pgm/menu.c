@@ -90,13 +90,16 @@ int display_status_line(Session *session) {
 }
 
 int _gray_range_shift(Session *session) {
-    char *buffer;
-
     int black_lvl = strtol(session->args[0], (char **)NULL, 10);
     int white_lvl = strtol(session->args[1], (char **)NULL, 10);
 
-    gray_range_shift(session->pgm_image, black_lvl, white_lvl);
-    return 0;
+    return gray_range_shift(session->pgm_image, black_lvl, white_lvl);
+}
+
+int _thresholding(Session *session) {
+    int threshold = strtol(session->args[0], (char **)NULL, 10);
+
+    return thresholding(session->pgm_image, threshold);
 }
 
 int repl_main_loop() {
@@ -188,6 +191,20 @@ int repl_main_loop() {
             session.is_error = 1;
             break;
         }
+        break;
+      }
+      case THRESHOLD: {
+        if (session._argc < 1) {
+            strcpy(session.error_buffer, "save file command takes one argument");
+            session.is_error = 1;
+            break;
+        }
+        if (_thresholding(&session)) {
+            strcpy(session.error_buffer, "save file command takes one argument");
+            session.is_error = 1;
+            break;
+        }
+
         break;
       }
       case EXIT: {
