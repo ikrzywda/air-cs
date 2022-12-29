@@ -1,6 +1,6 @@
 #include "menu.h"
 #include "reader.h"
-#include <stdio.h>
+#include "transformer.h"
 
 Commands parse_command(char *token) {
   for (int i = 0; i < COMMAND_COUNT; ++i) {
@@ -16,8 +16,34 @@ int load_file(Session *session, char *path) {
     if (!input_stream) {
         return 1;
     }
+
+    if (session->pgm_image) {
+        free_pgm(session->pgm_image);
+        session->pgm_image = NULL;
+    }
+
     session->pgm_image = new_pgm(input_stream);
+
+    strcpy(session->source_path, path);
+    session->is_source = 1;
+    fclose(input_stream);
     return 0;
+}
+
+
+int save_pgm(Session *session, char *path) {
+    FILE *output_stream = fopen(path, "w");
+    if (!output_stream || !session->pgm_image) {
+        return 1;
+    }
+
+    write_to_file(output_stream, session->pgm_image);
+
+    strcpy(session->target_path, path);
+    session->is_target = 1;
+    fclose(output_stream);
+    return 0;
+    
 }
 
 int init_session(Session *session) {
@@ -29,6 +55,10 @@ int init_session(Session *session) {
     for (int i = 0; i < MAX_ARG_COUNT; ++i) {
         session->args[i] = malloc(MAX_PATH_LENGTH);
     }
+    session->is_error = 0;
+    session->is_source = 0;
+    session->is_target = 0;
+    session->pgm_image = NULL;
 
     return 0;
 }
@@ -47,6 +77,17 @@ int display(Session *session, char *path) {
     return 0;
 }
 
+int display_status_line(Session *session) {
+    if (session->is_source) {
+        printf("(%s) ", session->source_path);
+    }
+    if (session->is_target) {
+        printf("-> (%s) ", session->target_path);
+    }
+    printf(">>> ");
+    return 0;
+}
+
 int repl_main_loop() {
   Session session;
   char buffer[LINE_BUFFER_LENGTH];
@@ -57,7 +98,9 @@ int repl_main_loop() {
     return 1;
   }
 
-  while (fgets(buffer, LINE_BUFFER_LENGTH, stdin)) {
+  while (!display_status_line(&session) && fgets(buffer, LINE_BUFFER_LENGTH, stdin)) {
+    
+
     command_token = strtok(buffer, " \n");
 
     if (command_token == NULL) {
@@ -75,28 +118,43 @@ int repl_main_loop() {
       case LOAD_SOURCE_FILE: {
         if (session._argc < 1) {
             strcpy(session.error_buffer, "load file command takes one argument");
+            session.is_error = 1;
+            break;
         }
         if (load_file(&session, session.args[0])) {
             sprintf(session.error_buffer, "failed to load file: %s", session.args[0]);
+            session.is_error = 1;
+            break;
         }
         break;
       }
       case DISPLAY: {
         if (display(&session, (!session._argc) ? NULL : session.args[0])) {
             strcpy(session.error_buffer, "failed to display");
+            session.is_error = 1;
         }
         break;
       }
       case SAVE_TO_FILE: {
-        printf("SAVE!\n");
+        if (session._argc < 1) {
+            strcpy(session.error_buffer, "save file command takes one argument");
+            session.is_error = 1;
+            break;
+        }
+        if (save_pgm(&session, session.args[0])) {
+            strcpy(session.error_buffer, "save file command takes one argument");
+            session.is_error = 1;
+            break;
+        }
         break;
       }
       case INVERT: {
-        printf("INVERT!\n");
-        break;
-      }
-      case COMMAND_COUNT: {
-        printf("CC!\n");
+        if (!session.pgm_image) {
+            strcpy(session.error_buffer, "no source loaded");
+            session.is_error = 1;
+            break;
+        }
+        invert_image(session.pgm_image);
         break;
       }
       case EXIT: {
@@ -106,9 +164,9 @@ int repl_main_loop() {
         printf("Unexpected command: %s\n", command_token);
         continue;
     }
-    if (session.error_buffer[0]) {
+    if (session.is_error) {
         printf("ERROR: %s\n", session.error_buffer);
-        session.error_buffer[0] = '\0';
+        session.is_error = 0;
     }
   }
   return 0;

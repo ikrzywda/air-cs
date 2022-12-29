@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "reader.h"
+#include "transformer.h"
 
 #define LINE_BUFFER_LENGTH 100
 #define MAX_PATH_LENGTH 100
@@ -20,6 +21,7 @@ typedef struct Session {
   char error_buffer[ERROR_BUFFER_LENGTH];
   char *args[MAX_ARG_COUNT];
   int _argc;
+  int is_source, is_target, is_error;
 } Session;
 
 typedef enum Commands {
@@ -38,6 +40,7 @@ const char *COMMANDS[COMMAND_COUNT] = {
 
 Commands parse_command(char *token);
 int init_session(Session *session);
+int display(Session *session, char *path);
 int load_file(Session *session, char *path);
 int repl_main_loop();
 

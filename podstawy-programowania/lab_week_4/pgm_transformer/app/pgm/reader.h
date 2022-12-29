@@ -17,5 +17,6 @@ int *load_contents(FILE *input_stream, int length);
 int write_to_file(FILE *write_stream, PGMImage *source);
 
 PGMImage *new_pgm(FILE *input_stream);
+void free_pgm(PGMImage *pgm);
 
 #endif

@@ -67,3 +67,8 @@ PGMImage *new_pgm(FILE *input_stream) {
 
   return new_image;
 }
+
+void free_pgm(PGMImage *pgm) {
+  free(pgm->contents);
+  free(pgm);
+}
