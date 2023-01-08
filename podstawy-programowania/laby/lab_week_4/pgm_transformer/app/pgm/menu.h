@@ -14,7 +14,7 @@
 #define COMMAND_COUNT 8
 #define ERROR_BUFFER_LENGTH 250
 
-typedef struct Session {
+typedef struct {
   char source_path[MAX_PATH_LENGTH];
   char target_path[MAX_PATH_LENGTH];
   PGMImage *pgm_image;

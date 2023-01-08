@@ -1,5 +1,7 @@
 #include "reader.h"
 
+#define VALUES_PER_LINE 11
+
 int read_header(FILE *input_stream, PGMImage *output) {
   char buffer[LINE_WIDTH], comment_buffer;
   int width, height, bit_depth;
@@ -25,18 +27,18 @@ int read_header(FILE *input_stream, PGMImage *output) {
 }
 
 int *load_contents(FILE *input_stream, int length) {
-  int *contents = malloc(sizeof(int) * length), l;
+  int *contents = malloc(sizeof(int) * length), point;
 
   if (contents == NULL) {
     return NULL;
   }
 
   for (int i = 0; i < length; ++i) {
-    if (!fscanf(input_stream, "%d ", &l)) {
+    if (!fscanf(input_stream, "%d ", &point)) {
       free(contents);
       return NULL;
     }
-    contents[i] = l;
+    contents[i] = point;
   }
   return contents;
 }
@@ -46,7 +48,7 @@ int write_to_file(FILE *write_stream, PGMImage *source) {
           source->bit_depth);
   int length = source->width * source->height;
   for (int i = 0; i < length; ++i) {
-    if (!(i % 11)) {
+    if (!(i % VALUES_PER_LINE)) {
       fputc('\n', write_stream);
     }
     fprintf(write_stream, " %-3d ", source->contents[i]);

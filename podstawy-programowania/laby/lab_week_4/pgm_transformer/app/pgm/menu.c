@@ -114,7 +114,6 @@ int repl_main_loop() {
 
   while (!display_status_line(&session) && fgets(buffer, LINE_BUFFER_LENGTH, stdin)) {
     
-
     command_token = strtok(buffer, " \n");
 
     if (command_token == NULL) {
