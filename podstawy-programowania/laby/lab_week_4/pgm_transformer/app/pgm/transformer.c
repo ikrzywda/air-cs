@@ -4,10 +4,9 @@
 #include <stdlib.h>
 
 int invert_image(PGMImage *source) {
-  int length = source->height * source->width;
   int new_val;
 
-  for (int i = 0; i < length; ++i) {
+  for (int i = 0; i < source->contents_length; ++i) {
     new_val = source->bit_depth - source->contents[i];
     source->contents[i] = new_val;
   }
@@ -26,24 +25,22 @@ int thresholding(PGMImage *source, int threshold) {
 }
 
 int histogram_equilization(PGMImage *source) {
-  int length = source->height * source->width;
   int min_val = source->bit_depth, max_val = 0;
   int current_val;
   float coefficient, new_val;
 
-  for (int i = 0; i < length; ++i) {
+  for (int i = 0; i < source->contents_length; ++i) {
     current_val = source->contents[i];
     if (current_val < min_val) {
       min_val = current_val;
-    }
-    if (current_val > max_val) {
+    } else if (current_val > max_val) {
       max_val = current_val;
     }
   }
 
-  coefficient = source->bit_depth / (max_val - min_val);
+  coefficient = source->bit_depth / (float)(max_val - min_val);
 
-  for (int i = 0; i < length; ++i) {
+  for (int i = 0; i < source->contents_length; ++i) {
     current_val = source->contents[i];
     new_val = (current_val - min_val) * coefficient;
 
