@@ -206,6 +206,10 @@ int repl_main_loop() {
 
         break;
       }
+      case HELP: {
+        printf("%s", HELP_PROMPT);
+        break;
+      }
       case EXIT: {
         return 0;
       }
