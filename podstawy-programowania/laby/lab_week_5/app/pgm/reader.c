@@ -10,7 +10,6 @@ int read_header(FILE *input_stream, Image *output) {
     return 1;
   }
 
-  printf("%s", buffer);
   if (!strcmp(buffer, "P2\n")) {
     file_type = P2;
   } else if (!strcmp(buffer, "P3\n")) {
@@ -34,7 +33,6 @@ int read_header(FILE *input_stream, Image *output) {
   output->bit_depth = bit_depth;
   output->file_type = file_type;
 
-  printf("%d %d %d %d", height, width, bit_depth, file_type);
   return 0;
 }
 
@@ -58,8 +56,7 @@ int *load_contents(FILE *input_stream, int length) {
 int write_to_file(FILE *write_stream, Image *source) {
   fprintf(write_stream, "P2\n%d %d\n%d\n", source->height, source->width,
           source->bit_depth);
-  int length = source->width * source->height;
-  for (int i = 0; i < length; ++i) {
+  for (int i = 0; i < source->contents_length; ++i) {
     if (!(i % VALUES_PER_LINE)) {
       fputc('\n', write_stream);
     }
@@ -88,6 +85,8 @@ Image *ppm_to_pgm(Image *ppm) {
   
   Image *pgm = malloc(sizeof(Image));
   memcpy(pgm, ppm, sizeof(Image));
+
+
 
   int *pgm_contents = malloc(sizeof(int) * ppm->contents_length);
   int rgb_sum = 0, rgb_mean;

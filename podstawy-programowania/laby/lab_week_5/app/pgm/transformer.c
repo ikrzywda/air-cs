@@ -21,6 +21,7 @@ int thresholding(Image *source, int threshold) {
     new_val = source->contents[i] < threshold ? 0 : source->bit_depth;
     source->contents[i] = new_val;
   }
+
   return 0;
 }
 
