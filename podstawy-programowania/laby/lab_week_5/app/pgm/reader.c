@@ -82,11 +82,9 @@ Image *new_image(FILE *input_stream) {
 
 Image *ppm_to_pgm(Image *ppm) {
   assert(ppm->file_type == P3);
-  
+
   Image *pgm = malloc(sizeof(Image));
   memcpy(pgm, ppm, sizeof(Image));
-
-
 
   int *pgm_contents = malloc(sizeof(int) * ppm->contents_length);
   int rgb_sum = 0, rgb_mean;

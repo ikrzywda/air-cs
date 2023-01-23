@@ -17,7 +17,7 @@
 #define ERROR_BUFFER_LENGTH 250
 #define MAX_OPERATION_COUNT 4
 
-typedef enum  {
+typedef enum {
   INVERT,
   EQUALIZE,
   SHIFT,
@@ -31,11 +31,9 @@ typedef struct {
 
 typedef struct {
   int argc;
-  char * const *argv;
+  char *const *argv;
   const char *template;
 } GetOptArgs;
-
-
 
 typedef struct {
   char source_path[MAX_PATH_LENGTH];
@@ -48,6 +46,5 @@ typedef struct {
 
 int run_session(Session *session);
 int init_operation(Operation *operation, int arg_count);
-
 
 #endif

@@ -1,17 +1,14 @@
 #ifndef READER_H
 #define READER_H
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 #define LINE_WIDTH 1024
 
-typedef enum {
-  P2,
-  P3
-} PGMType;
+typedef enum { P2, P3 } PGMType;
 
 typedef struct {
   int width, height, bit_depth, contents_length;
