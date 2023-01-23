@@ -111,8 +111,9 @@ Node *node_delete(Node *root, Node *node) {
 }
 
 int free_list(Node *root) {
-  while ((root = node_delete_first(root)) != NULL)
-    ;
+  while ((root = node_delete_first(root)) != NULL) {
+  }
+  return 0;
 }
 
 #endif

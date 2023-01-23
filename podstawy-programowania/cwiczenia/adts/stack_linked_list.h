@@ -31,7 +31,7 @@ int list_stack_push(ListStack *stack, int value) {
   return 0;
 }
 
-int *list_stack_pop(ListStack *stack, int *result) {
+int list_stack_pop(ListStack *stack, int *result) {
 
   if (stack->root_node == NULL) {
     return 1;
@@ -47,7 +47,7 @@ int *list_stack_pop(ListStack *stack, int *result) {
   free(last_node);
   next_to_last_node->next = NULL;
 
-  return 1;
+  return 0;
 }
 
 #endif
