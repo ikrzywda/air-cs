@@ -1,6 +1,8 @@
 CC = gcc
 CFLAGS = -Wall
 SRCDIR = pgm
+BUILD_DIR = build
+
 
 SOURCES = app.c $(SRCDIR)/cli.c $(SRCDIR)/reader.c \
 		  $(SRCDIR)/transformer.c
@@ -11,5 +13,4 @@ build: $(OBJ)
 	gcc -o transformer $(SOURCES)
 
 %.o: %.c
-	gcc -c -o $@ $< $(CFLAGS)
-
+	$(CC) $(CFLAGS) -c -o $@ $< 
