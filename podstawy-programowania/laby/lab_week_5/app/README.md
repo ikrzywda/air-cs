@@ -438,7 +438,8 @@ int main(int argc, char **argv) {
 
 Makefile wykonuje kompiluje kazdy plik `.c` do pliku obiektowego `.o` w 
 bloku `%.o: %.c` - co mówi "dla danego pliku obiektowego wez plik zrodlowy
-o tym samym patternie". Po tym wszystkie pliki obiektowe są linkowane
+o tym samym patternie". Po tym wszystkie pliki obiektowe są linkowane. Pliki obiektowe
+powinny byc zapisywane w oddzielnym folderze, ale nie są.
 
 ```Makefile
 CC = gcc
@@ -451,9 +452,9 @@ OBJ = app.o $(SRCDIR)/cli.o $(SRCDIR)/reader.o \
 		  $(SRCDIR)/transformer.o
 
 build: $(OBJ)
-	gcc -o transformer $(SOURCES)
+	$(CC) -o transformer $(SOURCES)
 
 %.o: %.c
-	gcc -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 ```
