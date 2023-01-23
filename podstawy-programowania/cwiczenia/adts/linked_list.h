@@ -8,12 +8,12 @@ typedef struct Node Node;
 
 typedef struct Node {
   int data;
-  Node *next; 
+  Node *next;
 } Node;
 
-
 Node *node_init() {
-  Node *node = (Node*)malloc(sizeof(Node));
+  Node *node = (Node *)malloc(sizeof(Node));
+  node->data = 0;
   node->next = NULL;
   return node;
 }
@@ -37,7 +37,7 @@ Node *node_prepend_with_value(Node *node, int value) {
 Node *node_append(Node *root, Node *new_node) {
   Node *last_node = root;
 
-  for (; last_node->next != NULL; ) {
+  for (; last_node->next != NULL;) {
     last_node = last_node->next;
   }
 
@@ -78,7 +78,6 @@ Node *node_delete_last(Node *root) {
   return root;
 }
 
-
 Node *node_delete_next(Node *root, Node *node) {
   if (root == NULL || node == NULL) {
     return root;
@@ -102,12 +101,18 @@ Node *node_delete(Node *root, Node *node) {
   }
 
   Node *temp_tail = root, *rest = node->next;
-  for (; temp_tail->next != node; temp_tail = temp_tail->next);
+  for (; temp_tail->next != node; temp_tail = temp_tail->next)
+    ;
 
   temp_tail->next = rest;
   free(node);
 
   return root;
+}
+
+int free_list(Node *root) {
+  while ((root = node_delete_first(root)) != NULL)
+    ;
 }
 
 #endif
