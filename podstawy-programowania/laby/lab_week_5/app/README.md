@@ -2,12 +2,12 @@
 
 ## Specyfikacja
 
-* Wejście: plik pgm (wersja ASCII)
+* Wejście: plik ppm (wersja ASCII)
 * Wyjście: plik pgm (wersjia ASCII)
 
-Program wczytuje obrazy pgm i aplikuje na nie transformacje
+Program wczytuje obrazy ppm, konwertuje je na pgm i aplikuje na nie transformacje
 (inwersja, przesunięcie poziomu szarości, rozciągnięcie histogramu, progowanie).
-Uzytkownik wchodzi w interakcję z programem poprzez interfejs CLI.
+Uzytkownik wchodzi w interakcję z programem podając argumenty wywolania.
 
 ## Handlowanie plików
 
