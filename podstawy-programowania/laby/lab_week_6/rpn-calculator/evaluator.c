@@ -42,7 +42,6 @@ int eval_term(Stack *stack, int *result) {
   Token current_token;
   stack_pop(stack, &current_token);
 
-  printf("TERM: ");
   print_token(&current_token);
 
   if (current_token.type == VALUE) {
