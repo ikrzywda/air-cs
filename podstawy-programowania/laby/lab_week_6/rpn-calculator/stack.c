@@ -17,7 +17,8 @@ int stack_is_empty(Stack *stack) {
 }
 
 int stack_push(Stack *stack, Token *token) {
-  int new_size, *reallocated_arr;
+  int new_size;
+  Token *reallocated_arr;
 
   if (stack->index >= stack->size - 2) {
     stack->size *= 2;
@@ -47,6 +48,18 @@ int stack_pop(Stack *stack, Token *result) {
 
   *result = stack->contents[stack->index];
   --stack->index;
+
+  return 0;
+}
+
+int stack_peek(Stack *stack, Token *result) {
+  assert(stack->contents != NULL);
+
+  if (stack_is_empty(stack)) {
+    return 1;
+  }
+
+  *result = stack->contents[stack->index];
 
   return 0;
 }

@@ -19,6 +19,7 @@ int stack_init(Stack *stack);
 int stack_is_empty(Stack *stack);
 int stack_push(Stack *stack, Token *value);
 int stack_pop(Stack *stack, Token *result);
+int stack_peek(Stack *stack, Token *result);
 void stack_print(Stack *stack);
 
 #endif

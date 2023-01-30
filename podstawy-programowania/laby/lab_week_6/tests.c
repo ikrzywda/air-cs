@@ -39,7 +39,7 @@ void test_parser_push_on_stack() {
 }
 
 void test_evaluator_binops() {
-  char input[4][100] = {"3 3 +", "3 3 -", "3 3 *", "3 3 /"};
+  char input[5][100] = {"3 3 +", "3 3 -", "3 3 *", "3 3 /", "2 0 /"};
 
   int result_arr[4] = {6, 0, 9, 1}, result;
 
@@ -51,6 +51,11 @@ void test_evaluator_binops() {
     assert(!eval_binop(&stack, &result));
     assert(result == result_arr[i]);
   }
+
+  assert(!parse_input(input[4], &stack));
+  assert(eval_binop(&stack, &result)); 
+
+  free(stack.contents);
 }
 
 void test_evaluator_nested_binops() {
@@ -71,6 +76,7 @@ void test_evaluator_nested_binops() {
     assert(!eval_binop(&stack, &result));
     assert(result == result_arr[i]);
   }
+  free(stack.contents);
 }
 
 void test_evaluator_errors() {
@@ -89,6 +95,7 @@ void test_evaluator_errors() {
     assert(!parse_input(input[i], &stack));
     assert(eval_binop(&stack, &result));
   }
+  free(stack.contents);
 }
 
 int main() {

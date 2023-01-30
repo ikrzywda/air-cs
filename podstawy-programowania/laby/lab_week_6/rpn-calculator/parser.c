@@ -14,4 +14,5 @@ int parse_input(char *input, Stack *stack) {
     stack_push(stack, &parsed_token);
     current_token = strtok(NULL, delim);
   }
+  return 0;
 }
