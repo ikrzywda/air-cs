@@ -14,10 +14,11 @@ TEST_SOURCES = tests.c $(SRCDIR)/evaluator.c $(SRCDIR)/lexer.c \
 TEST_OBJ = tests.o $(SRCDIR)/evaluator.o $(SRCDIR)/lexer.o \
 		  $(SRCDIR)/parser.o $(SRCDIR)/stack.o $(SRCDIR)/token.o
 
-build-app: $(OBJ)
+
+app: $(OBJ)
 	gcc -o rpn $(APP_SOURCES)
 
-build-tests: ${OBJ}
+test: ${OBJ}
 	gcc -o tests $(TEST_SOURCES)
 
 format:
