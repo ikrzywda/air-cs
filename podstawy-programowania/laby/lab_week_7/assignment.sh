@@ -69,7 +69,7 @@ function rename_and_archive() {
 	cd $1
 	mkdir $tmpdir
 	for file in *.[jJ][pP][gG]; do
-		copy_rendsafsdafamed_jpg "$file" "$tmpdir"
+		copy_renamed_jpg "$file" "$tmpdir"
 	done
 
 	for file in *.[pP][nN][gG]; do
