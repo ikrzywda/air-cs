@@ -63,7 +63,7 @@ int main() {
     display_student(&student_base.students[found_std_index]);
   }
 
-  write_students_to_file(&student_base, "test.txt");
+  save_students(&student_base, "test.txt");
 
   remove_student(&student_base, student_1.index_number);
 
@@ -72,7 +72,7 @@ int main() {
   }
 
   StudentBase student_base_2("PWR_2");
-  read_students_from_file(&student_base_2, "test.txt");
+  load_students(&student_base_2, "test.txt");
   student_base_2.display_all();
 
   return 0;

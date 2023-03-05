@@ -1,6 +1,5 @@
 #include "Student.hpp"
 
-
 // https://en.cppreference.com/w/cpp/string/basic_string/stol
 int safe_str_to_int(std::string token) {
   try {

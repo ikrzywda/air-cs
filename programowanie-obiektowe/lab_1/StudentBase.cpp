@@ -44,7 +44,7 @@ int remove_student(StudentBase *student_base, int index_number) {
   return 0;
 }
 
-int write_students_to_file(StudentBase *students, const char *file_name) {
+int save_students(StudentBase *students, const char *file_name) {
   std::ofstream out(file_name);
   for (auto student : students->students) {
     out << student.serialize_to_csv() << "\n";
@@ -53,7 +53,7 @@ int write_students_to_file(StudentBase *students, const char *file_name) {
   return 1;
 }
 
-int read_students_from_file(StudentBase *students, const char *file_name) {
+int load_students(StudentBase *students, const char *file_name) {
   std::ifstream in(file_name);
   std::string line;
   Student student;

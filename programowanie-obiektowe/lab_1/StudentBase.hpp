@@ -21,7 +21,7 @@ struct StudentBase {
 int find_student(StudentBase *student_base, int index_number,
                  unsigned long *found);
 int remove_student(StudentBase *student_base, int index_number);
-int write_students_to_file(StudentBase *students, const char *file_name);
-int read_students_from_file(StudentBase *students, const char *file_name);
+int save_students(StudentBase *students, const char *file_name);
+int load_students(StudentBase *students, const char *file_name);
 
 #endif
