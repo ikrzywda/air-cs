@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-int str_to_int(std::string token);
+int safe_str_to_int(std::string token);
 
 struct Student {
   std::string name = "";

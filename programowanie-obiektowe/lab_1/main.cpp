@@ -22,6 +22,9 @@ Student student_fixture() {
 }
 
 int main() {
+
+  /* ETAP 1 */
+
   Student student_1("Jacek", "Placek", 213900, 10, 11, 2002);
   Student student_2("Franek", "Bajederka", 312290, 11, 12, 2005);
 
@@ -32,6 +35,8 @@ int main() {
   read_student(&student_3);
   display_student(&student_3);
 
+  /* ETAP 2 */
+
   Student student_array_1[5] = {student_1, student_2, student_fixture(),
                                 student_fixture(), student_fixture()};
 
@@ -39,6 +44,8 @@ int main() {
 
   display_all_students(student_array_1, 5);
   display_all_students(student_array_2, 2);
+
+  /* ETAP 3 */
 
   StudentBase student_base("PWR");
 
@@ -56,7 +63,7 @@ int main() {
     display_student(&student_base.students[found_std_index]);
   }
 
-  // write_students_to_file(&student_base, "test.txt");
+  write_students_to_file(&student_base, "test.txt");
 
   remove_student(&student_base, student_1.index_number);
 
@@ -67,6 +74,6 @@ int main() {
   StudentBase student_base_2("PWR_2");
   read_students_from_file(&student_base_2, "test.txt");
   student_base_2.display_all();
-  // display_student(&student_base_2.students[2]);
+
   return 0;
 }

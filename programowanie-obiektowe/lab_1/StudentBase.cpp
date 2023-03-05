@@ -66,7 +66,6 @@ int read_students_from_file(StudentBase *students, const char *file_name) {
   // OP:
   // https://stackoverflow.com/questions/8046357/how-do-i-check-if-a-stringstream-variable-is-empty-null
   while (getline(in, line)) {
-    std::cout << line << std::endl;
     students->students.push_back(Student(line));
   }
 

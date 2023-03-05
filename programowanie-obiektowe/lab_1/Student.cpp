@@ -1,6 +1,8 @@
 #include "Student.hpp"
 
-int str_to_int(std::string token) {
+
+// https://en.cppreference.com/w/cpp/string/basic_string/stol
+int safe_str_to_int(std::string token) {
   try {
     return std::stoi(token);
   } catch (std::invalid_argument &exception) {
@@ -35,19 +37,19 @@ Student::Student(std::string csv_row) {
   }
 
   if (std::getline(string_stream, current_token, ',')) {
-    index_number = str_to_int(current_token);
+    index_number = safe_str_to_int(current_token);
   }
 
   if (std::getline(string_stream, current_token, ',')) {
-    birth_day = str_to_int(current_token);
+    birth_day = safe_str_to_int(current_token);
   }
 
   if (std::getline(string_stream, current_token, ',')) {
-    birth_month = str_to_int(current_token);
+    birth_month = safe_str_to_int(current_token);
   }
 
   if (std::getline(string_stream, current_token, ',')) {
-    birth_year = str_to_int(current_token);
+    birth_year = safe_str_to_int(current_token);
   }
 }
 
@@ -78,24 +80,24 @@ int read_student(Student *student) {
   std::cout << "Name: ";
   std::cin >> student->name;
 
-  std::cout << "\nSurname: ";
+  std::cout << "Surname: ";
   std::cin >> student->surname;
 
-  std::cout << "\nIndex Number: ";
+  std::cout << "Index Number: ";
   std::cin >> itnermediate_string;
-  student->index_number = str_to_int(itnermediate_string);
+  student->index_number = safe_str_to_int(itnermediate_string);
 
-  std::cout << "\nBirth (Day): ";
+  std::cout << "Birth (Day): ";
   std::cin >> itnermediate_string;
-  student->birth_day = str_to_int(itnermediate_string);
+  student->birth_day = safe_str_to_int(itnermediate_string);
 
-  std::cout << "\nBirth (Month): ";
+  std::cout << "Birth (Month): ";
   std::cin >> itnermediate_string;
-  student->birth_month = str_to_int(itnermediate_string);
+  student->birth_month = safe_str_to_int(itnermediate_string);
 
-  std::cout << "\nBirth (Year): ";
+  std::cout << "Birth (Year): ";
   std::cin >> itnermediate_string;
-  student->birth_year = str_to_int(itnermediate_string);
+  student->birth_year = safe_str_to_int(itnermediate_string);
 
   return 1;
 }
