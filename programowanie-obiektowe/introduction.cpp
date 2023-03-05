@@ -1,10 +1,21 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
 #define INITIAL_CAPACITY 100
+
+int str_to_int(std::string token) {
+  try {
+    return std::stoi(token);
+  } catch (std::invalid_argument &exception) {
+    std::cout << "invalid argument" << exception.what() << '\n';
+    return -1;
+  }
+  return -1;
+}
 
 struct Student {
   std::string name = "";
@@ -15,8 +26,14 @@ struct Student {
   int birth_year = 0;
 
   Student() {}
-
   Student(std::string name, std::string surname, int index_number,
+          int birth_day, int birth_month, int birth_year);
+  Student(std::string csv_row);
+
+  std::string serialize_to_csv();
+};
+
+  Student::Student(std::string name, std::string surname, int index_number,
           int birth_day, int birth_month, int birth_year) {
     this->name = name;
     this->surname = surname;
@@ -26,27 +43,47 @@ struct Student {
     this->birth_year = birth_year;
   }
 
-  Student(Student *student) {
-    this->name = student->name;
-    this->surname = student->surname;
-    this->index_number = student->index_number;
-    this->birth_day = student->birth_day;
-    this->birth_month = student->birth_month;
-    this->birth_year = student->birth_year;
+  Student::Student(std::string csv_row) {
+    std::stringstream string_stream(csv_row);
+    std::string current_token;
+
+    if (std::getline(string_stream, current_token, ',')) {
+      name = current_token;
+    }
+
+    if (std::getline(string_stream, current_token, ',')) {
+      surname = current_token;
+    }
+
+    if (std::getline(string_stream, current_token, ',')) {
+      index_number = str_to_int(current_token);
+    }
+
+    if (std::getline(string_stream, current_token, ',')) {
+      birth_day = str_to_int(current_token);
+    }
+
+    if (std::getline(string_stream, current_token, ',')) {
+      birth_month = str_to_int(current_token);
+    }
+
+    if (std::getline(string_stream, current_token, ',')) {
+      birth_year = str_to_int(current_token);
+    }
   }
 
-  std::string serialize_to_txt() {
+  std::string Student::serialize_to_csv() {
     std::string out;
-    out += this->name + "\n";
-    out += this->surname + "\n";
-    out += std::to_string(this->index_number) + "\n";
-    out += std::to_string(this->birth_day) + "\n";
-    out += std::to_string(this->birth_month) + "\n";
-    out += std::to_string(this->birth_year) + "\n";
+    out += this->name + ",";
+    out += this->surname + ",";
+    out += std::to_string(this->index_number) + ",";
+    out += std::to_string(this->birth_day) + ",";
+    out += std::to_string(this->birth_month) + ",";
+    out += std::to_string(this->birth_year);
 
     return out;
   }
-};
+
 
 void display_student(Student *student) {
   std::cout << "name: " << student->name << '\n';
@@ -105,9 +142,9 @@ std::string rand_string(int length) {
   return out;
 }
 
-Student *mock_student() {
-  return new Student(rand_string(10), rand_string(11), rand() % 100000,
-                     rand() % 30, rand() % 12, rand() % 2000);
+Student student_fixture() {
+  return Student(rand_string(10), rand_string(11), rand() % 100000, rand() % 30,
+                 rand() % 12, rand() % 2000);
 }
 
 Student *read_student() {
@@ -149,7 +186,7 @@ int remove_student(StudentBase *student_base, int index_number) {
 int write_students_to_file(StudentBase *students, const char *file_name) {
   std::ofstream out(file_name);
   for (auto student : students->students) {
-    out << student.serialize_to_txt();
+    out << student.serialize_to_csv() << "\n";
   }
   out.close();
   return 1;
@@ -157,14 +194,14 @@ int write_students_to_file(StudentBase *students, const char *file_name) {
 
 int read_students_from_file(StudentBase *students, const char *file_name) {
   std::ifstream in(file_name);
+  std::string line;
   Student student;
 
   // OP:
   // https://stackoverflow.com/questions/8046357/how-do-i-check-if-a-stringstream-variable-is-empty-null
-  while (!in.eof()) {
-    read_student_from_file_stream(&student, &in);
-
-    students->students.push_back(Student(&student));
+  while (getline(in, line)) {
+    std::cout << line << std::endl;
+    students->students.push_back(Student(line));
   }
 
   in.close();
@@ -180,12 +217,10 @@ int main() {
   Student *student_3 = read_student();
   display_student(student_3);
 
-  Student student_array_1[5] = {student_1, student_2, Student(mock_student()),
-                                Student(mock_student()),
-                                Student(mock_student())};
+  Student student_array_1[5] = {student_1, student_2, student_fixture(),
+                                student_fixture(), student_fixture()};
 
-  Student student_array_2[2] = {Student(mock_student()),
-                                Student(mock_student())};
+  Student student_array_2[2] = {student_fixture(), student_fixture()};
 
   display_all_students(student_array_1, 5);
   display_all_students(student_array_2, 2);
@@ -193,7 +228,7 @@ int main() {
   StudentBase student_base("PWR");
 
   for (int i = 0; i < 10; ++i) {
-    student_base.add_student(Student(mock_student()));
+    student_base.add_student(Student(student_fixture()));
   }
   student_base.add_student(student_1);
 
@@ -206,7 +241,7 @@ int main() {
     display_student(&student_base.students[found_std_index]);
   }
 
-  write_students_to_file(&student_base, "test.txt");
+  // write_students_to_file(&student_base, "test.txt");
 
   remove_student(&student_base, student_1.index_number);
 
@@ -217,6 +252,6 @@ int main() {
   StudentBase student_base_2("PWR_2");
   read_students_from_file(&student_base_2, "test.txt");
   student_base_2.display_all();
-
+  // display_student(&student_base_2.students[2]);
   return 0;
 }
