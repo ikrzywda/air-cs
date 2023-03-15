@@ -26,6 +26,7 @@ def normalize_formatting(input_path: str, output_path: str, header: List[str]):
 #     return dataframe.to_csv()
 
 
+
 if __name__ == "__main__":
     input_dir = sys.argv[1]
     paths = [os.path.join(input_dir, fn) for fn in next(os.walk(input_dir))[2]]

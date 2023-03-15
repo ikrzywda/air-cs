@@ -1,0 +1,4 @@
+padnas==1.4.4
+numpy==1.21.5
+scikit-learn==1.0.2
+matplotlib==3.5.2
