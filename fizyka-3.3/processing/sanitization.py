@@ -1,8 +1,6 @@
-from io import StringIO
 import os
 import sys
 from typing import List
-from attr import has
 
 import pandas as pd
 
@@ -20,19 +18,18 @@ def normalize_formatting(input_path: str, output_path: str, header: List[str]):
             output_file.write(header + "\n")
         output_file.write(sanitized)
 
-# def sort_inputs(input_str: str) -> str:
-#     dataframe = pd.read_csv(StringIO(input_str))
-#     dataframe.sort_values("U")
-#     return dataframe.to_csv()
 
+def get_sample_data(df: pd.DataFrame, probing_count: int) -> pd.DataFrame:
+    return df[df.index % probing_count == 0]
 
 
 if __name__ == "__main__":
-    input_dir = sys.argv[1]
+    input_dir, output_dir = sys.argv[1], sys.argv[2]
     paths = [os.path.join(input_dir, fn) for fn in next(os.walk(input_dir))[2]]
     for input_file in paths:
-        normalize_formatting(input_file, input_file.split(".")[0] + "-sanitized.csv", header="U,I")
-
-
-
-
+        # print(os.path.join(output_dir, os.path.basename(input_file)))
+        normalize_formatting(
+            input_file,
+            os.path.join(output_dir, os.path.basename(input_file)),
+            header="U,I",
+        )
