@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 
 class Uncertainty(BaseModel):
-    uncentainty: float
+    uncertainty: float
     lsd_magnitude: float
     c_constant: int
 
@@ -16,17 +16,16 @@ class DeviceUncertainty(BaseModel):
 
 
 def compute_uncertainty(input_value: float, device_specs: DeviceUncertainty) -> float:
-    # uncertainty = next(
-    #     (
-    #         uncertainty_spec
-    #         for range, uncertainty_spec in device_specs.probing_specs
-    #         if input_value > range
-    #     ),
-    #     None,
-    # )
+    uncertainty = next(
+        (
+            uncertainty_spec
+            for range, uncertainty_spec in device_specs.probing_specs
+            if input_value < range
+        ),
+        None,
+    )
 
     uncertainty = device_specs.probing_specs[0][1]
-    print(uncertainty)
 
     return abs(
         input_value * uncertainty.uncertainty
