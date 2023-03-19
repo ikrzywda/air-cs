@@ -30,7 +30,7 @@ def dataframe_to_latex_table(df: pd.DataFrame) -> str:
         latex_tab,
         flags=re.MULTILINE,
     )
-    latex_tab = latex_tab.replace("\\toprule", "\\hline\n \\rowcolor[HTML]{EFEFEF} ")
+    latex_tab = latex_tab.replace("\\toprule", "\\hline\n \\rowcolor{lightgray} ")
     latex_tab = latex_tab.replace("\\midrule", "")
     latex_tab = latex_tab.replace("\\bottomrule", "")
     latex_tab = latex_tab.replace("\\\\", "\\\\ \\hline")

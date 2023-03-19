@@ -20,7 +20,7 @@ def normalize_formatting(input_path: str, output_path: str, header: List[str]):
 
 
 def get_sample_data(df: pd.DataFrame, probing_count: int) -> pd.DataFrame:
-    return df[df.index % probing_count == 0]
+    return df[df.index % probing_count == 0][5:15]
 
 
 if __name__ == "__main__":
