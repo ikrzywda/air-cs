@@ -6,14 +6,17 @@ import re
 
 
 def dataframe_to_latex_table(df: pd.DataFrame) -> str:
+    print(df)
     delims = "".join(["l|" for i in range(len(df.columns))])
     delims = "{|" + delims + "}"
 
     headers = df.columns.tolist()
+    formatting = [None] * len(headers)
     latex_tab = tabulate(
         df,
         headers=headers,
         tablefmt="latex_booktabs",
+        # floatfmt="{:.2f}",
         showindex=False,
         numalign="center",
     )
