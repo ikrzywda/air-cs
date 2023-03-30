@@ -16,7 +16,6 @@ class DeviceUncertainty(BaseModel):
 
 
 def compute_uncertainty(input_value: float, device_specs: DeviceUncertainty) -> float:
-    
     if input_value < 50:
         uncertainty = device_specs.probing_specs[0][1]
     else:

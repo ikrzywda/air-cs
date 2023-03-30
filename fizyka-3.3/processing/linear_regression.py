@@ -32,9 +32,7 @@ def get_regression(
     )
 
 
-def get_regression_summary(
-    x: np.ndarray, y: np.ndarray
-):
+def get_regression_summary(x: np.ndarray, y: np.ndarray):
     x = sm.add_constant(x)
     model = sm.OLS(y, x)
     results = model.fit()
@@ -47,12 +45,6 @@ def get_regression_summary(
     print("a: ", results.params[1])
     print("b: ", results.params[0])
     print("vbi: ", -b / a)
-    print("uvbi", sqrt(
-        (b/(a**2) * ua)**2 + (1/a * ub)**2
-    ))
-    print("rz: ", 1/a, ua / a**2)
-    print("uuz: ", 1/ua)
-
-    
-
-
+    print("uvbi", sqrt((b / (a**2) * ua) ** 2 + (1 / a * ub) ** 2))
+    print("rz: ", 1 / a, ua / a**2)
+    print("uuz: ", 1 / ua)

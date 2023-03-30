@@ -38,6 +38,7 @@ ZENER_DIODE_DATA_FILES = [
     ),
 ]
 
+
 def prepare_data(path: str, sort_ascending: Optional[bool] = True) -> pd.DataFrame:
     df = pd.read_csv(path, index_col=False, header=0)
     df.sort_values(by="U", ascending=sort_ascending)
@@ -232,15 +233,12 @@ if __name__ == "__main__":
 
         sample = sample_data_presentation(forward, reverse)
 
-
         sample_forward = get_sample_data(forward, -20)[0:10]
         sample_reverse = get_sample_data(reverse, -20)[-10:]
 
-        
         print(sample_forward)
         print(sample_reverse)
         sample_forward.reset_index(inplace=True, drop=True)
-
 
         sample_reverse.reset_index(inplace=True, drop=True)
 
@@ -255,6 +253,3 @@ if __name__ == "__main__":
         with open(f"result_assets/latex_tables/{name}.tex", "w") as f:
             # f.write(dataframe_to_latex_table(rounded))
             f.write(rounded.style.to_latex())
-
-
-
