@@ -1,5 +1,5 @@
 import math
-from .data import TRAINING_DATA, TEST_DATA
+from data import TRAINING_DATA, TEST_DATA
 
 
 def calculate_distance(point1, point2):
