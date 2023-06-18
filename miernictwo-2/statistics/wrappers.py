@@ -1,5 +1,11 @@
 import pandas as pd
 import numpy as np
+from scipy.stats import t
+
+# shouldn't really be hardcoded, but it's fine for now
+DEGREES_OF_FREEDOM = 11
+TRUST_LEVEL = 0.97
+T_STUDENT_CRITICAL_VALUE = t.ppf(1 - TRUST_LEVEL / 2, DEGREES_OF_FREEDOM)
 
 LATEX_ARITHMETIC_MEANS_HEADERS = [
     r"$$\bar{a} \space [mm]$$",
@@ -10,14 +16,22 @@ LATEX_ARITHMETIC_MEANS_HEADERS = [
     r"$$\bar{h}_c \space [mm]$$",
 ]
 
+LATEX_STANDARD_DEVIATION_SIDES_HEADERS = [
+    r"$$s_a \space [mm]$$",
+    r"$$s_b \space [mm]$$",
+    r"$$s_c \space [mm]$$",
+    r"$$s_{ha} \space [mm]$$",
+    r"$$s_{hb} \space [mm]$$",
+    r"$$s_{hc} \space [mm]$$",
+]
 
 LATEX_MEASUREMENT_HEADERS = [
-    "$$a \space [mm]$$",
-    "$$b \space [mm]$$",
-    "$$c \space [mm]$$",
-    "$$h_a \space [mm]$$",
-    "$$h_b \space [mm]$$",
-    "$$h_c \space [mm]$$",
+    r"$$a \space [mm]$$",
+    r"$$b \space [mm]$$",
+    r"$$c \space [mm]$$",
+    r"$$h_a \space [mm]$$",
+    r"$$h_b \space [mm]$$",
+    r"$$h_c \space [mm]$$",
 ]
 LATEX_UNCERTAINTY_HEADERS = [
     r"$$u(\bar{a})$$",
@@ -44,16 +58,16 @@ LATEX_TRUST_INTERVALS_HEADERS = [
     r"$$h_c \space [mm]$$",
 ]
 LATEX_AREA_HEADERS = [
-    "$$S_{heron} \space [mm^2]$$",
-    "$$S_{ah} \space [mm^2]$$",
-    "$$S_{bh} \space [mm^2]$$",
-    "$$S_{ch} \space [mm^2]$$",
+    r"$$S_{heron} \space [mm^2]$$",
+    r"$$S_{ah} \space [mm^2]$$",
+    r"$$S_{bh} \space [mm^2]$$",
+    r"$$S_{ch} \space [mm^2]$$",
 ]
 LATEX_SURFACE_STANDARD_DEVIATIONS_HEADERS = [
-    "$$u(S_{heron}) \space [mm^2]$$",
-    "$$u(S_{ah}) \space [mm^2]$$",
-    "$$u(S_{bh}) \space [mm^2]$$",
-    "$$u(S_{ch}) \space [mm^2]$$",
+    r"$$u(S_{heron}) \space [mm^2]$$",
+    r"$$u(S_{ah}) \space [mm^2]$$",
+    r"$$u(S_{bh}) \space [mm^2]$$",
+    r"$$u(S_{ch}) \space [mm^2]$$",
 ]
 LATEX_EXTENDED_UNCERTAINTIES_HEADERS = [
     r"$$S_{\bar{y}{Heron}}$$",
@@ -62,11 +76,18 @@ LATEX_EXTENDED_UNCERTAINTIES_HEADERS = [
     r"$$S_{\bar{y}{ch}}$$",
 ]
 
+LATEX_SURFACE_TRUST_INTERVALS_HEADERS = [
+    r"$$S_{heron} \space [mm^2]$$",
+    r"$$S_{ah} \space [mm^2]$$",
+    r"$$S_{bh} \space [mm^2]$$",
+    r"$$S_{ch} \space [mm^2]$$",
+]
+
 
 def mark_outliers(df: pd.DataFrame) -> pd.DataFrame:
     columns = df.columns.values.tolist()
 
-    columns_absdiff = [f"|{column} - <{column}>|" for column in columns]
+    columns_absdiff = [f"absdiff({column})" for column in columns]
 
     thresholds = []
     all_means = []
