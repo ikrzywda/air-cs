@@ -1,4 +1,6 @@
+from functools import reduce
 from typing import Any
+
 import numpy as np
 
 
@@ -33,6 +35,16 @@ def m_autocorrelation(x_vec: np.array, lag: int) -> np.floating[Any]:
     return autocovariance / m_autocovariance(x_vec, 0)
 
 
+def m_cross_correlation(x_vec: np.array) -> np.array:
+    result = np.zeros(len(x_vec))
+    for m in range(1, len(x_vec) + 1):
+        rolled_arr = np.roll(x_vec, m)
+        for n in range(m):
+            result[m - 1] += rolled_arr[n] * x_vec[n]
+
+    return np.append(result, np.flip(result)[1:])
+
+
 def run_comparison_with_numpy(x_vec: np.array, y_vec: np.array, prompt: str) -> None:
     print(prompt)
     print("my covariance: ", m_covariance(x_vec, y_vec))
@@ -49,6 +61,7 @@ def run_comparison_with_numpy(x_vec: np.array, y_vec: np.array, prompt: str) -> 
 
     print("my autocorrelation: ", m_autocorrelation(x_vec, 1))
     print("numpy autocorrelation: ", np.corrcoef(x_vec, np.roll(x_vec, 1))[0][1])
+
     print("=========================================")
 
 
@@ -71,3 +84,7 @@ if __name__ == "__main__":
         linear_x_with_negative_coefficient,
         "linear x with positive coefficient and linear x with negative coefficient",
     )
+
+    x_vec = np.array([1, 2, 3, 4, 5])
+    print("my cross correlation: ", m_cross_correlation(x_vec))
+    print("numpy cross correlation: ", np.correlate(x_vec, x_vec, mode="full"))
