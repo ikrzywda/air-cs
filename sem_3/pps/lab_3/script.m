@@ -4,16 +4,14 @@ MONTH_INDEXING_ARRAY = 1:12;
 MONTH_DATES_ARRAY = getDatetimeMonthArrayForYear(YEAR);
 MONTH_LABELS = arrayfun(@(index) datestr(datenum(0, index, 1), 'mmmm'), MONTH_INDEXING_ARRAY, 'UniformOutput', false);
 
-
+% Data input & sanitization
 data_table = readtable(DATA_PATH);
 data_table.temperature = fillmissing(data_table.temperature, 'linear');
-
 assert(~any(isnan(data_table.temperature)), 'Assertion failed: Temperature contains NaN values.');
 
 data_table_sliced_by_month = arrayfun( ...
     @(month) getMonthSlice(data_table, month), MONTH_DATES_ARRAY, 'uniformOutput', false ...
 );
-
 
 mean_yearly_temperature = mean(data_table.temperature);
 mean_temperature_by_month_array = cellfun( ...
@@ -31,11 +29,29 @@ std_by_month = cellfun( ...
     data_table_sliced_by_month ...
 );
 
-autocorr_result = xcorr(mean_temperature_by_month_array);
+% Standarization for mean monthly temperatures
+standardized_temperature_by_month = (mean_temperature_by_month_array - mean(mean_temperature_by_month_array)) ./ std(mean_temperature_by_month_array);
+autocorr_result = xcorr(standardized_temperature_by_month);
+xcov(autocorr_result);
 
-figure();
+figure;
 hold on;
+scatter(1:length(autocorr_result), autocorr_result, 'Marker', 'o', 'MarkerFaceColor', 'b', 'MarkerEdgeColor', 'b', 'DisplayName', 'Points');
 
+for i = 1:length(autocorr_result)
+    plot([i, i], [0, autocorr_result(i)], '--', 'Color', [0.5, 0.5, 0.5]);
+end
+
+title('Autocorrelation');
+xlabel('lag');
+grid on;
+hold off;
+saveas(gcf, "figures/autocorrelation-plot.png", "png");
+
+
+% Plotting average monthly temperature
+figure;
+hold on;
 plot(MONTH_INDEXING_ARRAY, mean_temperature_by_month_array);
 plot(MONTH_INDEXING_ARRAY, mean_temperature_by_month_array, 'o');
 errorbar(MONTH_INDEXING_ARRAY, mean_temperature_by_month_array, std_by_month);
@@ -43,15 +59,20 @@ xticks(MONTH_INDEXING_ARRAY);
 xticklabels(MONTH_LABELS);
 ylabel('Avg. temperature [C]')
 hold off;
+saveas(gcf, "figures/mean-monthly-temperature-plot.png", "png");
 
-xcorr([1,2,3,4,5])
-
+% Histogram for temperature with per-measurement data
 figure();
 histogram(data_table.temperature);
 xlabel("Temperature[C]");
+saveas(gcf, "figures/temperature-histogram.png", "png");
 
+% Histogram for mean daily temperature data
+bins = min(mean_temperature_by_day_array):2:max(mean_temperature_by_day_array);
 figure();
+% histogram(mean_temperature_by_day_array, 'BinEdges', bins);
 histogram(mean_temperature_by_day_array);
+saveas(gcf, "figures/temperature-by-day-histogram.png", "png");
 
 function month_slice = getMonthSlice(data_table, target_month)
     if ~isa(data_table.date, 'datetime')
