@@ -3,6 +3,7 @@
 % cw. 6
 
 close all;
+clear all;
 SIMULATION_PATH = "simulation.slx";
 
 % Step time
@@ -62,7 +63,7 @@ for i = 1:3
     hold on;
     subplot(212);
     plot(output.tout, output.h2);
-    xlabel("Czas [s]");
+    xlabel("t [s]");
     ylabel("h_2(t) [m]");
     title("Odpowiedź w zbiorniku 2");    
 end
@@ -71,13 +72,14 @@ subplot(211);
 legend(generate_descriptors("f_we1", flow_inputs_vec_1 ./ a1), "Location", "best");
 figure(fig_1);
 subplot(212);
-legend(generate_descriptors("f_we2", flow_inputs_vec_1 ./ a1), "Location", "best");
+legend(generate_descriptors("f_we1", flow_inputs_vec_1 ./ a1), "Location", "best");
+
+saveas(fig_1, "feedforward_cascade_linear_1.png");
 
 % Case no. 2: step in container two and constant flow in container 2
-
-flow_input_step_1 = 0;
+flow_input_step_1 = flow_input_max_1;
 flow_input_step_2 = 0.1 * flow_input_max_2;
-fig_1 = figure();
+fig_2 = figure();
 for i = 1:3
     initial_height_1 = flow_input_max_1 / a1;
     initial_height_2 = (flow_inputs_vec_2(i) + flow_input_max_1) / a2;
@@ -96,17 +98,18 @@ for i = 1:3
     hold on;
     subplot(212);
     plot(output.tout, output.h2);
-    xlabel("Czas [s]");
+    xlabel("t [s]");
     ylabel("h_2(t) [m]");
     title("Odpowiedź w zbiorniku 2");    
 end
-figure(fig_1);
+figure(fig_2);
 subplot(211);
-legend(generate_descriptors("f_we1", flow_inputs_vec_1 ./ a1), "Location", "best");
-figure(fig_1);
+legend(generate_descriptors("f_we2", flow_inputs_vec_1 ./ a1), "Location", "best");
+figure(fig_2);
 subplot(212);
 legend(generate_descriptors("f_we2", flow_inputs_vec_1 ./ a1), "Location", "best");
 
+saveas(fig_2, "feedforward_cascade_linear_2.png");
 
 function descriptors = generate_descriptors(param_name, value_vec)
     descriptors = string([]);

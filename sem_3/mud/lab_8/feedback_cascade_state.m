@@ -84,10 +84,12 @@ for i = 1:3
 end
 figure(fig_1);
 subplot(211);
-legend(generate_descriptors("f_we1", flow_inputs_vec_1 ./ a_1), "Location", "best");
+legend(generate_descriptors("f_we1", flow_inputs_vec_1), "Location", "best");
 figure(fig_1);
 subplot(212);
-legend(generate_descriptors("f_we2", flow_inputs_vec_1 ./ a_1), "Location", "best");
+legend(generate_descriptors("f_we1", flow_inputs_vec_1), "Location", "best");
+
+saveas(fig_1, "feedback_state_equations.png");
 
 
 function descriptors = generate_descriptors(param_name, value_vec)

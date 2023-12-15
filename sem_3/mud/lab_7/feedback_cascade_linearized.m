@@ -12,7 +12,7 @@ T0 = 2;
 
 % Area of the bottom
 bottom_area = 2;
-A = bottom_area; % simuling parameter
+
 
 % Areas of holes
 hole_1_cross_area = 0.1 * bottom_area;
@@ -38,6 +38,10 @@ flow_inputs_vec_1 = [0, 0.5 * flow_input_max_1, 0.9 * flow_input_max_1];
 flow_inputs_vec_2 = [0, 0.5 * flow_input_max_2, 0.9 * flow_input_max_2];
 flow_input_step_1 = 0.1 * flow_input_max_1;
 flow_input_step_2 = 0;
+
+% Simulation params
+A1 = bottom_area;
+A2 = bottom_area;
 
 % Initial conditions -- used in sumulation
 initial_height_1 = 0;
@@ -71,11 +75,12 @@ for i = 1:3
 end
 figure(fig_1);
 subplot(211);
-legend(generate_descriptors("f_we1", flow_inputs_vec_1 ./ a_1), "Location", "best");
+legend(generate_descriptors("f_we1", flow_inputs_vec_1), "Location", "best");
 figure(fig_1);
 subplot(212);
-legend(generate_descriptors("f_we2", flow_inputs_vec_1 ./ a_1), "Location", "best");
+legend(generate_descriptors("f_we2", flow_inputs_vec_1), "Location", "best");
 
+saveas(fig_1, "feedback_linearised.png");
 
 function descriptors = generate_descriptors(param_name, value_vec)
     descriptors = string([]);

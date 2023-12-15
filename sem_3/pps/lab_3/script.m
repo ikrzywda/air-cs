@@ -1,13 +1,18 @@
 DATA_PATH = "poland-temperature-data-2022.csv";
-YEAR = 2022;
-MONTH_INDEXING_ARRAY = 1:12;
-MONTH_DATES_ARRAY = getDatetimeMonthArrayForYear(YEAR);
-MONTH_LABELS = arrayfun(@(index) datestr(datenum(0, index, 1), 'mmmm'), MONTH_INDEXING_ARRAY, 'UniformOutput', false);
+MONTH_INDEXING_ARRAY = 1:24;
+MONTH_DATES_ARRAY = [getDatetimeMonthArrayForYear(YEAR) getDatetimeMonthArrayForYear(2021)];
+TARGET_YEARS = [2021, 2022];
+MONTH_LABELS = arrayfun(@(year, index) datestr(datenum(year, index, 1), 'mmmm yyyy'), ...
+    repmat(TARGET_YEARS, 1, numel(MONTH_INDEXING_ARRAY)), ...
+    repmat(MONTH_INDEXING_ARRAY, 1, numel(target_years)), ...
+    'UniformOutput', false);cla
 
 % Data input & sanitization
 data_table = readtable(DATA_PATH);
 data_table.temperature = fillmissing(data_table.temperature, 'linear');
 assert(~any(isnan(data_table.temperature)), 'Assertion failed: Temperature contains NaN values.');
+
+
 
 data_table_sliced_by_month = arrayfun( ...
     @(month) getMonthSlice(data_table, month), MONTH_DATES_ARRAY, 'uniformOutput', false ...
@@ -86,6 +91,25 @@ function month_slice = getMonthSlice(data_table, target_month)
     :);
 end
 
+function month_slices = getMonthSlices(data_table)
+    if ~isa(data_table.date, 'datetime')
+        data_table.date = datetime(data_table.date, 'InputFormat', 'yyyy-MM-dd HH:mm:ss');
+    end
+
+    unique_months = unique(month(data_table.date));
+    month_slices = cell(numel(unique_months), 1);
+
+    for i = 1:numel(unique_months)
+        target_month = unique_months(i);
+        target_month_year = [target_month, year(data_table.date(1))];
+        month_slices{i} = data_table( ...
+            month(data_table.date) == target_month_year(1) ...
+            & year(data_table.date) == target_month_year(2), ...
+        :);
+    end
+end
+
+
 function month_dates_array = getDatetimeMonthArrayForYear(year)
     month_dates_array = arrayfun( ...
     @(month_index) ...
@@ -97,7 +121,6 @@ function month_dates_array = getDatetimeMonthArrayForYear(year)
     1:12 ...
 );
 end
-
 
 
 
