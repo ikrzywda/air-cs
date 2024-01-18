@@ -1,0 +1,97 @@
+close all;
+clear all;
+
+SIMULATION_TIME_SECONDS = "{{SIMULATION_TIME_SECONDS}}";
+SIMULATION_STEP_SIZE_VAL = "{{SIMULATION_STEP_SIZE}}";
+SIMULATION_PATH = "{{SIMULATION_PATH}}";
+
+% constants
+Vw1 = 40;
+Vw2 = 0.8 * Vw1;    
+cpp = 1000;
+rop = 1.2;
+Pkn = 20000;
+Cv1 = cpp * rop * Vw1;
+Cv2 = cpp * rop * Vw2;
+
+T0 = {{STEP_TIME_SECONDS}};
+
+% steps
+dTzewVec = {{OUTSIDE_TEMP_STEP_SIZE_CELSIUS_VEC}};
+dTkzVec = {{INFLOW_TEMP_STEP_SIZE_CELSIUS_VEC}};
+dfkVec = {{INFLOW_POWER_STEP_SIZE_VEC}};
+
+if length(dTzewVec) ~= length(dTkzVec) || length(dTzewVec) ~= length(dfkVec)
+    error('Steps vectors must have the same length');
+end
+stepsVecLen = length(dTzewVec);
+
+% nominal values
+TzewN = {{OUTSIDE_TEMP_NOMINAL_CELSIUS}};
+Twew1N = {{ROOM_1_TEMP_NOMINAL_CELSIUS}};
+Twew2N = {{ROOM_2_TEMP_NOMINAL_CELSIUS}};
+TkzN = {{INFLOW_TEMP_NOMINAL_CELSIUS}};
+fkN = {{INFLOW_POWER_NOMINAL}};
+k0N = {{OUTSIDE_WALL_TEMP_LOSS_COEFF_NOMINAL}};
+k1N = {{ROOM_1_WALL_TEMP_LOSS_COEFF_NOMINAL}};
+k2N = {{ROOM_2_WALL_TEMP_LOSS_COEFF_NOMINAL}};
+
+% initial values
+Twew10Vec = {{ROOM_TEMP_1_INITIAL_CELSIUS}};
+Twew20Vec = {{ROOM_TEMP_2_INITIAL_CELSIUS}};
+Tzew0Vec = {{OUTSIDE_TEMP_INITIAL_CELSIUS_VEC}};
+Tkz0Vec = {{INFLOW_TEMP_INITIAL_CELSIUS_VEC}};
+fk0Vec = {{INFLOW_POWER_INITIAL_VEC}};
+
+if length(Tzew0Vec) ~= length(Tkz0Vec) || length(Tzew0Vec) ~= length(fk0Vec)
+    error('Initial values vectors must have the same length');
+end
+initialValuesVecLen = length(Tzew0Vec);
+
+% simulation values setup
+k0 = k0N;
+ks1 = k1N;
+ks2 = k2N;
+
+
+TimeVector = [];
+Twew1Results = [];
+Twew2Results = [];
+
+
+
+for stepIndex = 1:stepsVecLen
+    fig = figure;
+    title('Pierwszy pokoj');
+    for initialValuesIndex = 1:initialValuesVecLen
+        % set initial values
+        Twew10 = Twew10Vec(initialValuesIndex);
+        Twew20 = Twew20Vec(initialValuesIndex);
+        Tzew0 = Tzew0Vec(initialValuesIndex);
+        Tkz0 = Tkz0Vec(initialValuesIndex);
+        fk0 = fk0Vec(initialValuesIndex);
+
+        % set steps
+        dTzew = dTzewVec(stepIndex);
+        dTkz = dTkzVec(stepIndex);
+        dfk = dfkVec(stepIndex);
+        
+        % run simulation
+        [simulationOutput] = sim(SIMULATION_PATH, "StartTime", "0", "StopTime", SIMULATION_TIME_SECONDS, "FixedStep", SIMULATION_STEP_SIZE_VAL);
+    
+        
+        subplot(2, 1, 1);
+        hold on;
+        plot(simulationOutput.tout, simulationOutput.Twew1);
+        
+        xlabel('Czas [s]');
+        ylabel('Temperatura [C]');
+    
+        subplot(2, 1, 2);
+        hold on;
+        plot(simulationOutput.tout, simulationOutput.Twew2);
+        title('Drugi pokoj');
+        xlabel('Czas [s]');
+        ylabel('Temperatura [C]');
+    end
+end
