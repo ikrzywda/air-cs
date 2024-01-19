@@ -1,7 +1,7 @@
 from enum import Enum
 from pathlib import Path
 import pathlib
-from typing import Dict
+from typing import Dict, Self
 
 import jinja2
 import yaml
@@ -11,16 +11,28 @@ from .data_preprocessing import solve_initial_conditions
 
 class Simulation(str, Enum):
     TIME_DOMAIN = "time_domain"
+    TRANSFER_FUNCTION = "transfer_function"
+    STATE_SPACE = "state_space"
 
 
 SIMULATION_SIMULINK_MODEL_PATH_MAP: Dict[Simulation, Path] = {
     Simulation.TIME_DOMAIN: pathlib.Path("./simulink_models/time_domain.slx")
     .absolute()
     .__str__(),
+    Simulation.TRANSFER_FUNCTION: pathlib.Path(
+        "./simulink_models/transfer_function.slx"
+    )
+    .absolute()
+    .__str__(),
+    Simulation.STATE_SPACE: pathlib.Path("./simulink_models/state_space.slx")
+    .absolute()
+    .__str__(),
 }
 
 SIMULATION_TEMPLATE_MAP: Dict[Simulation, str] = {
     Simulation.TIME_DOMAIN: "time_domain.m.j2",
+    Simulation.TRANSFER_FUNCTION: "transfer_function.m.j2",
+    Simulation.STATE_SPACE: "state_space.m.j2",
 }
 
 
@@ -33,9 +45,9 @@ class TimeDomainSimConfig(BaseModel):
     PLOT_TITLE: str
 
     STEP_TIME_SECONDS: str
-    OUTSIDE_TEMP_STEP_SIZE_CELSIUS: str
-    INFLOW_TEMP_STEP_SIZE_CELSIUS: str
-    INFLOW_POWER_STEP_SIZE: str
+    OUTSIDE_TEMP_STEP_SIZE_CELSIUS_VEC: list[float]
+    INFLOW_TEMP_STEP_SIZE_CELSIUS_VEC: list[float]
+    INFLOW_POWER_STEP_SIZE_VEC: list[float]
     OUTSIDE_TEMP_NOMINAL_CELSIUS: str
     ROOM_1_TEMP_NOMINAL_CELSIUS: str
     ROOM_2_TEMP_NOMINAL_CELSIUS: str
@@ -47,6 +59,67 @@ class TimeDomainSimConfig(BaseModel):
     OUTSIDE_TEMP_INITIAL_CELSIUS_VEC: list[float]
     INFLOW_TEMP_INITIAL_CELSIUS_VEC: list[float]
     INFLOW_POWER_INITIAL_VEC: list[float]
+
+
+class TransferFunctionSimConfig(BaseModel):
+    ROOM_HEAT_CAPACITY: str
+    AIR_HEAT: str
+
+    SIMULATION_TIME_SECONDS: str
+    SIMULATION_STEP_SIZE: str
+    PLOT_TITLE: str
+
+    STEP_TIME_SECONDS: str
+    OUTSIDE_TEMP_STEP_SIZE_CELSIUS_VEC: list[float]
+    INFLOW_TEMP_STEP_SIZE_CELSIUS_VEC: list[float]
+    INFLOW_POWER_STEP_SIZE_VEC: list[float]
+    OUTSIDE_TEMP_NOMINAL_CELSIUS: str
+    ROOM_1_TEMP_NOMINAL_CELSIUS: str
+    ROOM_2_TEMP_NOMINAL_CELSIUS: str
+    INFLOW_TEMP_NOMINAL_CELSIUS: str
+    INFLOW_POWER_NOMINAL: str
+    OUTSIDE_WALL_TEMP_LOSS_COEFF_NOMINAL: str
+    ROOM_1_WALL_TEMP_LOSS_COEFF_NOMINAL: str
+    ROOM_2_WALL_TEMP_LOSS_COEFF_NOMINAL: str
+    OUTSIDE_TEMP_INITIAL_CELSIUS_VEC: list[float]
+    INFLOW_TEMP_INITIAL_CELSIUS_VEC: list[float]
+    INFLOW_POWER_INITIAL: float
+
+
+class TransferFunctionSimData(TransferFunctionSimConfig):
+    SIMULATION_PATH: str
+    ROOM_TEMP_1_INITIAL_CELSIUS: list[float]
+    ROOM_TEMP_2_INITIAL_CELSIUS: list[float]
+
+    @staticmethod
+    def from_config(config: TransferFunctionSimConfig, simulation: Simulation) -> Self:
+        room_1_initial_temps = []
+        room_2_initial_temps = []
+        for outside_temp, inflow_temp in zip(
+            config.OUTSIDE_TEMP_INITIAL_CELSIUS_VEC,
+            config.INFLOW_TEMP_INITIAL_CELSIUS_VEC,
+        ):
+            (
+                temp_room_1_initial_celsius,
+                temp_room_2_initial_celsius,
+            ) = solve_initial_conditions(
+                float(config.ROOM_HEAT_CAPACITY) * float(config.AIR_HEAT),
+                float(config.INFLOW_POWER_INITIAL),
+                float(outside_temp),
+                float(inflow_temp),
+                float(config.OUTSIDE_WALL_TEMP_LOSS_COEFF_NOMINAL),
+                float(config.ROOM_1_WALL_TEMP_LOSS_COEFF_NOMINAL),
+                float(config.ROOM_2_WALL_TEMP_LOSS_COEFF_NOMINAL),
+            )
+            room_1_initial_temps.append(temp_room_1_initial_celsius)
+            room_2_initial_temps.append(temp_room_2_initial_celsius)
+
+        return TransferFunctionSimData(
+            SIMULATION_PATH=SIMULATION_SIMULINK_MODEL_PATH_MAP[simulation],
+            ROOM_TEMP_1_INITIAL_CELSIUS=room_1_initial_temps,
+            ROOM_TEMP_2_INITIAL_CELSIUS=room_2_initial_temps,
+            **config.dict(),
+        )
 
 
 class TimeDomainSimData(TimeDomainSimConfig):
@@ -112,6 +185,11 @@ def get_sim_data(simulation: Simulation, config_path: str) -> Dict[str, Dict[str
                 config_data[sim_name] = TimeDomainSimData.from_config(
                     TimeDomainSimConfig(**config), simulation=simulation
                 ).dict()
+        case Simulation.TRANSFER_FUNCTION | Simulation.STATE_SPACE:
+            for sim_name, config in configs.items():
+                config_data[sim_name] = TransferFunctionSimData.from_config(
+                    TransferFunctionSimConfig(**config), simulation=simulation
+                ).dict()
     return config_data
 
 
@@ -120,6 +198,8 @@ def validate_configs(simlulation: Simulation, configs: Dict[str, Dict[str, str]]
         match simlulation:
             case Simulation.TIME_DOMAIN:
                 TimeDomainSimConfig(**config)
+            case Simulation.TRANSFER_FUNCTION | Simulation.STATE_SPACE:
+                TransferFunctionSimConfig(**config)
             case _:
                 raise ValueError(f"Invalid simulation: {simlulation}")
 
@@ -143,8 +223,6 @@ def generate_script(
 
 def generate_matlab(simulation: Simulation, config_path: str, output_dir: str):
     configs = get_sim_data(simulation, config_path)
-    print(configs)
-    # validate_configs(simulation, configs)
 
     for sim_name, config in configs.items():
         template_name = SIMULATION_TEMPLATE_MAP[simulation]

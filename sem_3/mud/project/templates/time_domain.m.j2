@@ -4,6 +4,7 @@ clear all;
 SIMULATION_TIME_SECONDS = "{{SIMULATION_TIME_SECONDS}}";
 SIMULATION_STEP_SIZE_VAL = "{{SIMULATION_STEP_SIZE}}";
 SIMULATION_PATH = "{{SIMULATION_PATH}}";
+PLOT_LINE_WIDTH = 2;
 
 % constants
 Vw1 = 40;
@@ -54,15 +55,9 @@ ks1 = k1N;
 ks2 = k2N;
 
 
-TimeVector = [];
-Twew1Results = [];
-Twew2Results = [];
-
-
-
 for stepIndex = 1:stepsVecLen
     fig = figure;
-    title('Pierwszy pokoj');
+
     for initialValuesIndex = 1:initialValuesVecLen
         % set initial values
         Twew10 = Twew10Vec(initialValuesIndex);
@@ -81,17 +76,21 @@ for stepIndex = 1:stepsVecLen
     
         
         subplot(2, 1, 1);
+        title('Pierwszy pokój');
         hold on;
-        plot(simulationOutput.tout, simulationOutput.Twew1);
-        
+        plot(simulationOutput.tout, simulationOutput.Twew1, "LineWidth", PLOT_LINE_WIDTH);
         xlabel('Czas [s]');
         ylabel('Temperatura [C]');
     
         subplot(2, 1, 2);
+        title('Drugi pokój');
         hold on;
-        plot(simulationOutput.tout, simulationOutput.Twew2);
-        title('Drugi pokoj');
+        plot(simulationOutput.tout, simulationOutput.Twew2, "LineWidth", PLOT_LINE_WIDTH);
         xlabel('Czas [s]');
         ylabel('Temperatura [C]');
+
     end
+    saveas(fig, sprintf('output_figures/step_%d_initial_%d.png', stepIndex, initialValuesIndex));
 end
+
+
