@@ -67,10 +67,27 @@ transferFunction2 = tf(N2, M);
 transferFunction3 = tf(N_12, M1);
 transferFunction4 = tf(N_22, M2);
 
+K1 = x + ks1 + k0;
+K2 = x + k0 + ks2;
+
+s1 = K1/Cv1;
+s2 = K2/Cv2;
+
+sprintf("s1 = %f\n", s1)
+sprintf("s2 = %f\n", s2)
+sprintf("1/s1 = %f\n", 1/s1)
+sprintf("1/s2 = %f\n", 1/s2)
+
 figure(1);
 bode(transferFunction1);
 grid on;
 title("Bode diagram of transfer function 1");
+% WNIOSKI:
+% - współczynniki czasowe na podstawie wykresu Bodego wynoszą:
+%   - 1/T1 = 0.0639
+% - wyliczone współczynniki czasowe:
+%   - 1/T1 = 0.065
+% Współczynniki są do siebie zbliżone
 
 figure(2);
 nyquist(transferFunction1);
@@ -82,10 +99,24 @@ bode(transferFunction2);
 grid on;
 title("Bode diagram of transfer function 2");
 
+% WNIOSKI:
+% - współczynniki czasowe na podstawie wykresu Bodego wynoszą:
+%   - 1/T1 = 0.0639
+%   - 1/T2 = 0.162
+% - wyliczone współczynniki czasowe:
+%   - 1/T1 = 0.065
+%   - 1/T2 = 0.084
+% Współczynniki T1 są do siebie zbliżone, T2 nie są
+% bliskie, może to być spowodowane błędem przy sczytywaniu 
+% parametrów z wykresu Bodego (niska rozdzielczość Data Tip'ów w Matlabie)
+% Członu forsującego nie widać.
+
 figure(4);
 nyquist(transferFunction2);
 grid on;
 title("Nyquist diagram of transfer function 2");
+% WNIOSKI:
+% Układ jest drugiego stopnia.
 
 
 % Wniosek:
